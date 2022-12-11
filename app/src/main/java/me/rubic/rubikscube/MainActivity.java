@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
         Search.init();
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         BottomNavigationView navView = findViewById(R.id.nav_view);
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(R.id.navigation_timer, R.id.navigation_solver).build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
