@@ -38,6 +38,16 @@ public class InsertSideActivity extends AppCompatActivity {
         binding.buttonBottomCenter.setBackgroundColor(color);
         binding.buttonBottomRight.setBackgroundColor(color);
 
+        binding.buttonTopLeft.setOnClickListener(new ClickListener(CubeEnum.topLeft));
+        binding.buttonTopCenter.setOnClickListener(new ClickListener(CubeEnum.topCenter));
+        binding.buttonTopRight.setOnClickListener(new ClickListener(CubeEnum.topRight));
+        binding.buttonLeftCenter.setOnClickListener(new ClickListener(CubeEnum.leftCenter));
+        binding.buttonCenter.setOnClickListener(new ClickListener(CubeEnum.center));
+        binding.buttonRightCenter.setOnClickListener(new ClickListener(CubeEnum.rightCenter));
+        binding.buttonBottomLeft.setOnClickListener(new ClickListener(CubeEnum.bottomLeft));
+        binding.buttonBottomCenter.setOnClickListener(new ClickListener(CubeEnum.bottomCenter));
+        binding.buttonBottomRight.setOnClickListener(new ClickListener(CubeEnum.bottomRight));
+
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Insert cube");
@@ -103,9 +113,6 @@ public class InsertSideActivity extends AppCompatActivity {
                 color = getNextColor(currentColor);
                 button.setBackgroundColor(color);
             }
-
-
-
         }
 
         private int getNextColor(int currentColor) {
