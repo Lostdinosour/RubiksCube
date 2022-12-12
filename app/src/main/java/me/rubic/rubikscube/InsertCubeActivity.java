@@ -18,7 +18,7 @@ import me.rubic.rubikscube.utils.CubeEnum;
 
 public class InsertCubeActivity extends AppCompatActivity {
 
-    public ActionBar actionBar;
+    private ActionBar actionBar;
 
     private ActivityInsertCubeBinding binding;
 
@@ -55,7 +55,6 @@ public class InsertCubeActivity extends AppCompatActivity {
         private final CubeEnum side;
 
         public ClickListener(CubeEnum side) {
-            System.out.println("test2");
             this.side = side;
         }
 
