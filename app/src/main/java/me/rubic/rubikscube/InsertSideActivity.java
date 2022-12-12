@@ -5,9 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 import me.rubic.rubikscube.databinding.ActivityInsertCubeBinding;
 import me.rubic.rubikscube.databinding.ActivityInsertSideBinding;
@@ -51,7 +53,7 @@ public class InsertSideActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private static class ClickListener implements View.OnClickListener {
+    private class ClickListener implements View.OnClickListener {
 
         private final CubeEnum square;
 
@@ -61,9 +63,70 @@ public class InsertSideActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
+            int currentColor = ContextCompat.getColor(InsertSideActivity.this, R.color.black);
+            int color = ContextCompat.getColor(InsertSideActivity.this, R.color.black);
+
+            Button button = null;
             switch (square) {
                 case topLeft:
+                    button = binding.buttonTopLeft;
+                    break;
+                case topCenter:
+                    button = binding.buttonTopCenter;
+                    break;
+                case topRight:
+                    button = binding.buttonTopRight;
+                    break;
+                case leftCenter:
+                    button = binding.buttonLeftCenter;
+                    break;
+                case center:
+                    button = binding.buttonCenter;
+                    break;
+                case rightCenter:
+                    button = binding.buttonRightCenter;
+                    break;
+                case bottomLeft:
+                    button = binding.buttonBottomLeft;
+                    break;
+                case bottomCenter:
+                    button = binding.buttonBottomCenter;
+                    break;
+
+                case bottomRight:
+                    button = binding.buttonBottomRight;
+                    break;
+
             }
+            if (button != null) {
+                currentColor = ((ColorDrawable) button.getBackground()).getColor();
+                color = getNextColor(currentColor);
+                button.setBackgroundColor(color);
+            }
+
+
+
+        }
+
+        private int getNextColor(int currentColor) {
+            switch (currentColor) {
+                case R.color.black:
+                    return R.color.black;
+                case R.color.red:
+                    return R.color.green;
+                case R.color.green:
+                    return R.color.white;
+                case R.color.white:
+                    return R.color.blue;
+                case R.color.blue:
+                    return R.color.orange;
+                case R.color.orange:
+                    return R.color.yellow;
+                case R.color.yellow:
+                    return R.color.red;
+            }
+
+            return R.color.black;
         }
     }
 }
