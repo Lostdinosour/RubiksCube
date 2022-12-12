@@ -18,7 +18,7 @@ import me.rubic.rubikscube.utils.CubeEnum;
 
 public class InsertCubeActivity extends AppCompatActivity {
 
-    public ActionBar actionBar;
+    private ActionBar actionBar;
 
     private ActivityInsertCubeBinding binding;
 
