@@ -7,9 +7,11 @@ import androidx.core.content.ContextCompat;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import me.rubic.rubikscube.databinding.ActivityInsertCubeBinding;
 import me.rubic.rubikscube.databinding.ActivityInsertSideBinding;
+import me.rubic.rubikscube.utils.CubeEnum;
 
 public class InsertSideActivity extends AppCompatActivity {
 
@@ -47,5 +49,21 @@ public class InsertSideActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private static class ClickListener implements View.OnClickListener {
+
+        private final CubeEnum square;
+
+        public ClickListener(CubeEnum square) {
+            this.square = square;
+        }
+
+        @Override
+        public void onClick(View view) {
+            switch (square) {
+                case topLeft:
+            }
+        }
     }
 }

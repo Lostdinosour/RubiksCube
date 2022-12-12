@@ -55,7 +55,6 @@ public class InsertCubeActivity extends AppCompatActivity {
         private final CubeEnum side;
 
         public ClickListener(CubeEnum side) {
-            System.out.println("test2");
             this.side = side;
         }
 
