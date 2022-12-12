@@ -3,11 +3,13 @@
     <string name="title_timer">Timer</string>
     <string name="title_solver">Solver</string>
     <string name="insert_cube">Insert Cube</string>
-    <string name="top">Top</string>
+    <string name="up">Up</string>
     <string name="front">Front</string>
-    <string name="bottom">Bottom</string>
+    <string name="down">Down</string>
     <string name="left">Left</string>
     <string name="right">Right</string>
     <string name="back">Back</string>
     <string name="empty" />
+    <string name="get_solution">get solution</string>
+    <string name="generating_solution">generating solution...</string>
 </resources>

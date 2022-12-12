@@ -14,9 +14,9 @@ public enum CubeEnum {
     bottomRight,
 
 
-    sideTop,
+    sideUp,
     sideRight,
-    sideBottom,
+    sideDown,
     sideBack,
     sideLeft,
     sideFront
