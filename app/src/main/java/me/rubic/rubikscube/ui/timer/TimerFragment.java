@@ -29,7 +29,7 @@ public class TimerFragment extends Fragment {
         binding.getRoot().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("test");
+
             }
         });
         return root;

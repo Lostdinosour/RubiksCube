@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.GestureDetector;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
@@ -13,24 +15,24 @@ import java.util.ArrayList;
 
 import me.rubic.rubikscube.R;
 import me.rubic.rubikscube.databinding.ActivityInsertSideBinding;
-import me.rubic.rubikscube.ui.solver.InsertCubeActivity;
 import me.rubic.rubikscube.utils.CubeEnum;
 
 public class InsertSideActivity extends AppCompatActivity {
 
     private ActionBar actionBar;
+    private GestureDetector gestureDetector;
 
     private ActivityInsertSideBinding binding;
     private CubeEnum side;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityInsertSideBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        Intent intent = getIntent();
+        intent = getIntent();
         side = IntToSide(intent.getIntExtra("side", 1));
-        System.out.println(side);
         this.setColors();
 
         binding.buttonTopLeft.setOnClickListener(new ClickListener(CubeEnum.topLeft));
@@ -45,6 +47,8 @@ public class InsertSideActivity extends AppCompatActivity {
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Insert side");
+
+        gestureDetector = new GestureDetector(this, new GestureListener());
     }
 
     private void setColors() {
@@ -109,9 +113,11 @@ public class InsertSideActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         switch (item.getItemId()) {
             case android.R.id.home:
-                this.finish();
+                Intent myIntent = new Intent(this, InsertCubeActivity.class);
+                startActivity(myIntent);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -190,5 +196,59 @@ public class InsertSideActivity extends AppCompatActivity {
                 return getColor(R.color.white);
             }
         }
+    }
+
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+            if (velocityX > 3000) {
+                int nextSide = getNextSide("right");
+                Intent myIntent = new Intent(InsertSideActivity.this, InsertSideActivity.class);
+                myIntent.putExtra("side", nextSide);
+                InsertSideActivity.this.startActivity(myIntent);
+                overridePendingTransition(R.anim.animation_slide_right_enter, R.anim.animation_slide_right_exit);
+            }
+
+            else if (velocityX < -3000) {
+                int nextSide = getNextSide("left");
+                Intent myIntent = new Intent(InsertSideActivity.this, InsertSideActivity.class);
+                myIntent.putExtra("side", nextSide);
+                InsertSideActivity.this.startActivity(myIntent);
+                overridePendingTransition(R.anim.animation_slide_left_enter, R.anim.animation_slide_left_exit);
+            }
+
+            return super.onFling(e1, e2, velocityX, velocityY);
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        gestureDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+
+    private int getNextSide(String direction) {
+
+        int currentSide = intent.getIntExtra("side", 1);
+        int nextSide;
+
+        if (direction.equals("right")) {
+            if (currentSide == 6) {
+                nextSide = 1;
+            } else {
+                nextSide = currentSide + 1;
+            }
+        }
+
+        else {
+            if (currentSide == 1) {
+                nextSide = 6;
+            } else {
+                nextSide = currentSide - 1;
+            }
+        }
+
+        return nextSide;
     }
 }

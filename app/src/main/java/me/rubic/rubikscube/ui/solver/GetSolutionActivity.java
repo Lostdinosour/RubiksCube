@@ -1,8 +1,10 @@
 package me.rubic.rubikscube.ui.solver;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -18,6 +20,8 @@ public class GetSolutionActivity extends AppCompatActivity {
 
     private ActivityGetSolutionBinding binding;
 
+    private ActionBar actionBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,19 +29,28 @@ public class GetSolutionActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         generateSolution();
 
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle("Get solution");
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void generateSolution() {
-        new Thread() {
-            @Override
-            public void run() {
-                String cube = generateCube();
-                System.out.println(cube);
-                String solution = Solver.simpleSolve(cube);
-                System.out.println(solution);
-                binding.textViewSolution.setText(solution);
-            }
-        }.start();
+        new Thread(() -> {
+            String cube = generateCube();
+            String solution = Solver.simpleSolve(cube);
+            binding.textViewSolution.setText(solution);
+        }).start();
     }
 
     private String generateCube() {

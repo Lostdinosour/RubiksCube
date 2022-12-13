@@ -4,26 +4,32 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.rubic.rubikscube.MainActivity;
 import me.rubic.rubikscube.R;
 import me.rubic.rubikscube.databinding.ActivityInsertCubeBinding;
 import me.rubic.rubikscube.utils.CubeEnum;
 
 public class InsertCubeActivity extends AppCompatActivity {
-
     private ActionBar actionBar;
 
     private ActivityInsertCubeBinding binding;
 
     public static Map<String, ArrayList<Integer>> cubeArray;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +49,6 @@ public class InsertCubeActivity extends AppCompatActivity {
         if (cubeArray == null) {
             cubeArray = createDefaultCubeArray();
         }
-
     }
 
     public Map<String, ArrayList<Integer>> createDefaultCubeArray() {
@@ -67,7 +72,8 @@ public class InsertCubeActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                this.finish();
+                Intent myIntent = new Intent(this, MainActivity.class);
+                startActivity(myIntent);
                 return true;
         }
         return super.onOptionsItemSelected(item);
