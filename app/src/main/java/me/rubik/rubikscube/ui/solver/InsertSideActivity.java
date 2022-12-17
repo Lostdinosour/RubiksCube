@@ -1,4 +1,4 @@
-package me.rubic.rubikscube.ui.solver;
+package me.rubik.rubikscube.ui.solver;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,9 +13,9 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 
-import me.rubic.rubikscube.R;
-import me.rubic.rubikscube.databinding.ActivityInsertSideBinding;
-import me.rubic.rubikscube.utils.CubeEnum;
+import me.rubik.rubikscube.R;
+import me.rubik.rubikscube.databinding.ActivityInsertSideBinding;
+import me.rubik.rubikscube.utils.CubeEnum;
 
 public class InsertSideActivity extends AppCompatActivity {
 
@@ -202,7 +202,7 @@ public class InsertSideActivity extends AppCompatActivity {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 
-            if (velocityX > 3000) {
+            if (velocityX > 1) {
                 int nextSide = getNextSide("right");
                 Intent myIntent = new Intent(InsertSideActivity.this, InsertSideActivity.class);
                 myIntent.putExtra("side", nextSide);
@@ -210,7 +210,7 @@ public class InsertSideActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.animation_slide_right_enter, R.anim.animation_slide_right_exit);
             }
 
-            else if (velocityX < -3000) {
+            else if (velocityX < -1) {
                 int nextSide = getNextSide("left");
                 Intent myIntent = new Intent(InsertSideActivity.this, InsertSideActivity.class);
                 myIntent.putExtra("side", nextSide);

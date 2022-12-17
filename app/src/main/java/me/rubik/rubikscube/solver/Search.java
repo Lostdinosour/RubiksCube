@@ -1,4 +1,4 @@
-package me.rubic.rubikscube.solver;
+package me.rubik.rubikscube.solver;
 
 public class Search {
 

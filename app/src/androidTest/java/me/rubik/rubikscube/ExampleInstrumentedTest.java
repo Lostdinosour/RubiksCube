@@ -1,4 +1,4 @@
-package me.rubic.rubikscube;
+package me.rubik.rubikscube;
 
 import android.content.Context;
 

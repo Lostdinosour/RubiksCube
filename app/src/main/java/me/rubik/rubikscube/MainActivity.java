@@ -1,17 +1,17 @@
-package me.rubic.rubikscube;
+package me.rubik.rubikscube;
 
 import android.os.Bundle;
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.room.Room;
 
-import me.rubic.rubikscube.databinding.ActivityMainBinding;
-import me.rubic.rubikscube.solver.Search;
+import me.rubik.rubikscube.database.DatabaseHandler;
+import me.rubik.rubikscube.databinding.ActivityMainBinding;
+import me.rubik.rubikscube.solver.Search;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Search.init();
+        DatabaseHandler.init(Room.databaseBuilder(getApplicationContext(), DatabaseHandler.class, "database-name").build());
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(R.id.navigation_solver, R.id.navigation_timer).build();
@@ -28,5 +30,6 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
     }
+
 
 }

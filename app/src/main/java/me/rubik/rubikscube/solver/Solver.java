@@ -1,4 +1,4 @@
-package me.rubic.rubikscube.solver;
+package me.rubik.rubikscube.solver;
 
 public class Solver {
 
@@ -35,7 +35,7 @@ public class Solver {
      */
 
     public static String simpleSolve(String scrambledCube) {
-        return new Search().solution(scrambledCube, 21, 100000000, 0, 0);
+        return new Search().solution(scrambledCube, 21, 100000000, 10000, 0);
     }
 
 }

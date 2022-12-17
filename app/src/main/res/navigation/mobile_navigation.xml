@@ -7,13 +7,13 @@
 
     <fragment
         android:id="@+id/navigation_solver"
-        android:name="me.rubic.rubikscube.ui.solver.SolverFragment"
+        android:name="me.rubik.rubikscube.ui.solver.SolverFragment"
         android:label="@string/title_solver"
         tools:layout="@layout/fragment_solver" />
 
     <fragment
         android:id="@+id/navigation_timer"
-        android:name="me.rubic.rubikscube.ui.timer.TimerFragment"
+        android:name="me.rubik.rubikscube.ui.timer.TimerFragment"
         android:label="@string/title_timer"
         tools:layout="@layout/fragment_timer" />
 

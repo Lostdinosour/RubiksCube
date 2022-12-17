@@ -1,20 +1,18 @@
-package me.rubic.rubikscube.ui.solver;
+package me.rubik.rubikscube.ui.solver;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
-import me.rubic.rubikscube.R;
-import me.rubic.rubikscube.databinding.ActivityGetSolutionBinding;
-import me.rubic.rubikscube.databinding.ActivityInsertCubeBinding;
-import me.rubic.rubikscube.databinding.ActivityInsertSideBinding;
-import me.rubic.rubikscube.solver.Solver;
+import me.rubik.rubikscube.R;
+import me.rubik.rubikscube.databinding.ActivityGetSolutionBinding;
+import me.rubik.rubikscube.databinding.ActivityInsertCubeBinding;
+import me.rubik.rubikscube.databinding.ActivityInsertSideBinding;
+import me.rubik.rubikscube.solver.Solver;
 
 public class GetSolutionActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package me.rubic.rubikscube.solver;
+package me.rubik.rubikscube.solver;
 
 import java.util.Random;
 import java.io.DataInput;

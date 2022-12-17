@@ -1,28 +1,21 @@
-package me.rubic.rubikscube.ui.solver;
+package me.rubik.rubikscube.ui.solver;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import me.rubic.rubikscube.MainActivity;
-import me.rubic.rubikscube.R;
-import me.rubic.rubikscube.databinding.ActivityInsertCubeBinding;
-import me.rubic.rubikscube.utils.CubeEnum;
+import me.rubik.rubikscube.MainActivity;
+import me.rubik.rubikscube.R;
+import me.rubik.rubikscube.databinding.ActivityInsertCubeBinding;
+import me.rubik.rubikscube.utils.CubeEnum;
 
 public class InsertCubeActivity extends AppCompatActivity {
     private ActionBar actionBar;
@@ -64,6 +57,7 @@ public class InsertCubeActivity extends AppCompatActivity {
             }
             cubeArray.put(names[i], list);
         }
+
 
         return cubeArray;
     }

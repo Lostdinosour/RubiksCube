@@ -1,4 +1,4 @@
-package me.rubic.rubikscube.utils;
+package me.rubik.rubikscube.utils;
 
 public enum CubeEnum {
     topLeft,

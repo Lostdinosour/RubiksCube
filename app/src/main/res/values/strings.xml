@@ -12,4 +12,6 @@
     <string name="empty" />
     <string name="get_solution">get solution</string>
     <string name="generating_solution">generating solution...</string>
+    <string name="default_timer">0.00</string>
+    <string name="best_time">Best time:</string>
 </resources>

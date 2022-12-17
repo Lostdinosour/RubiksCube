@@ -1,4 +1,4 @@
-package me.rubic.rubikscube.ui.solver;
+package me.rubik.rubikscube.ui.solver;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

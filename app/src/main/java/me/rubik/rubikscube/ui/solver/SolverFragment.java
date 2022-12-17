@@ -1,4 +1,4 @@
-package me.rubic.rubikscube.ui.solver;
+package me.rubik.rubikscube.ui.solver;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,8 +15,8 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import me.rubic.rubikscube.R;
-import me.rubic.rubikscube.databinding.FragmentSolverBinding;
+import me.rubik.rubikscube.R;
+import me.rubik.rubikscube.databinding.FragmentSolverBinding;
 
 public class SolverFragment extends Fragment {
 
