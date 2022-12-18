@@ -117,5 +117,16 @@
         app:layout_constraintTop_toBottomOf="@+id/button_rightCenter"
         app:layout_constraintVertical_bias="0.0" />
 
+    <Button
+        android:id="@+id/button_camera"
+        android:layout_width="124dp"
+        android:layout_height="81dp"
+        android:text="Camera"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.120" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,7 +13,9 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 
+import me.rubik.rubikscube.MainActivity;
 import me.rubik.rubikscube.R;
+import me.rubik.rubikscube.camera.InsertCameraCubeActivity;
 import me.rubik.rubikscube.databinding.ActivityInsertSideBinding;
 import me.rubik.rubikscube.utils.CubeEnum;
 
@@ -43,6 +45,14 @@ public class InsertSideActivity extends AppCompatActivity {
         binding.buttonBottomLeft.setOnClickListener(new ClickListener(CubeEnum.bottomLeft));
         binding.buttonBottomCenter.setOnClickListener(new ClickListener(CubeEnum.bottomCenter));
         binding.buttonBottomRight.setOnClickListener(new ClickListener(CubeEnum.bottomRight));
+
+        binding.buttonCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(InsertSideActivity.this, InsertCameraCubeActivity.class);
+                startActivity(myIntent);
+            }
+        });
 
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
