@@ -50,6 +50,7 @@ public class InsertSideActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent myIntent = new Intent(InsertSideActivity.this, InsertCameraCubeActivity.class);
+                myIntent.putExtra("centerColor", binding.buttonCenter.getCurrentTextColor());
                 startActivity(myIntent);
             }
         });

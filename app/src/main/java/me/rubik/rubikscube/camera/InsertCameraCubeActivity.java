@@ -25,7 +25,9 @@ import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 import me.rubik.rubikscube.MainActivity;
 import me.rubik.rubikscube.R;
@@ -38,21 +40,21 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
 
     private ActivityInsertCameraCubeBinding binding;
 
-    private Mat mat1, mat2;
-    private Scalar scalarLow, scalarHigh;
-
     private ImageView imageView;
     private Bitmap bitmap;
     private Canvas canvas;
 
     private int screenWidth, screenHeight;
 
+    private int centerColor;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityInsertCameraCubeBinding.inflate(getLayoutInflater());
-
+        Intent intent = getIntent();
+        centerColor = intent.getIntExtra("centerColor", 0);
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -78,8 +80,6 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
 
         camera = binding.JavaCameraViewCamera;
         camera.setCameraIndex(0);
-        scalarLow = new Scalar(45, 20, 10);
-        scalarHigh = new Scalar(75, 255, 255);
         camera.setCvCameraViewListener(this);
         camera.enableView();
 
@@ -117,9 +117,6 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
 
     @Override
     public void onCameraViewStarted(int width, int height) {
-
-        mat1 = new Mat(width, height, CvType.CV_16UC4);
-        mat2 = new Mat(width, height, CvType.CV_16UC4);
     }
 
     @Override
@@ -135,31 +132,46 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
         int XTop = (int) (getX(screenWidth, mat.width()) - size / 2f);
         int XBottom = (int) (getX(screenWidth, mat.width()) + size / 2f);
 
-        System.out.println(YTop);
-        System.out.println(YBottom);
-        System.out.println(XTop);
-        System.out.println(XBottom);
+        ArrayList<Integer> squares = new ArrayList<>();
 
         for (int i = 0; i < 3; i++) {
             int YTop2 = YTop + i * per;
-            int YBottom2 = YBottom + (3 - i + 1) * per;
-
+            int YBottom2 = YBottom - (3 - (i + 1)) * per;
             for (int j = 0; j < 3; j++) {
                 int XTop2 = XTop + j * per;
-                int XBottom2 = XBottom + (3 - j + 1) * per;
+                int XBottom2 = XBottom - (3 - (j + 1)) * per;
 
-                System.out.println(YTop2);
-                System.out.println(YBottom2);
-                System.out.println(XTop2);
-                System.out.println(XBottom2);
+                double[] color = getAverage(mat, XTop2, XBottom2, YTop2, YBottom2);
+                color[0] *= 13;
+                color[1] *= 13;
+                color[2] *= 13;
+                int col = getColor(color);
+                if (col == 0) {
+                    i = 1000;
+                    break;
+                }
 
+                squares.add(col);
 
-                //double[] color = getAverage(mat, YTop2, YBottom2, XTop2, XBottom2);
-                //System.out.println(Arrays.toString(color));
             }
-
         }
-        return frame.rgba();
+
+        if (squares.size() == 9) {
+            System.out.println(centerColor);
+            if (squares.get(4) == centerColor) {
+                Logger.getLogger("global").warning(String.valueOf(squares.get(0)));
+                Logger.getLogger("global").warning(String.valueOf(squares.get(1)));
+                Logger.getLogger("global").warning(String.valueOf(squares.get(2)));
+                Logger.getLogger("global").warning(String.valueOf(squares.get(3)));
+                Logger.getLogger("global").warning(String.valueOf(squares.get(4)));
+                Logger.getLogger("global").warning(String.valueOf(squares.get(5)));
+                Logger.getLogger("global").warning(String.valueOf(squares.get(6)));
+                Logger.getLogger("global").warning(String.valueOf(squares.get(7)));
+                Logger.getLogger("global").warning(String.valueOf(squares.get(8)));
+            }
+        }
+
+        return mat;
     }
 
     private int getX(int screenWidth, int cameraWidth) {
@@ -182,10 +194,6 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
         for (int y = YTop; y <= YBottom; y++) {
             for (int x = XTop; x <= XBottom; x++) {
                 double[] rgb = mat.get(y, x);
-                if (rgb == null) {
-                    System.out.println("wtf");
-                    continue;
-                }
                 RTotal += rgb[0];
                 GTotal += rgb[1];
                 BTotal += rgb[2];
@@ -193,5 +201,50 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
         }
 
         return new double[] {RTotal / 250000, GTotal / 250000, BTotal / 250000};
+    }
+
+    final int offset = 50;
+
+    private int getColor(double[] color) {
+
+
+
+        if (color[0] - 255 > -offset) { // white, orange, yellow
+            if (color[1] - 255 > -offset) { // white
+                if (color[2] - 255 > -offset) {
+                    return getColor(R.color.white);
+                }
+            } else if (color[1] - 213 > -offset && color[1] - 213 < offset) { // yellow
+                if (color[2] < offset) {
+                    return getColor(R.color.yellow);
+                }
+            } else if (color[1] - 88 > -offset && color[1] - 88 < offset) { // orange
+                if (color[2] < offset) {
+                    return getColor(R.color.orange);
+                }
+            }
+        }
+
+        else if (color[0] < offset) { // green, blue
+            if (color[1] - 155 > -offset && color[1] - 155 < offset) { // green
+                if (color[2] - 72 > -offset && color[2] - 72 < offset) {
+                    return getColor(R.color.green);
+                }
+            } else if (color[1] - 70 > -offset && color[1] - 70 < offset) { // blue
+                if (color[2] - 173 > -offset && color[2] - 173 < offset) {
+                    return getColor(R.color.blue);
+                }
+            }
+        }
+
+        else if (color[0] - 183 > -offset && color[0] - 183 < offset) { // red
+            if (color[1] - 18 > -offset && color[1] - 18 < offset) {
+                if (color[2] - 52 > -offset && color[2] - 52 < offset) {
+                    return getColor(R.color.red);
+                }
+            }
+        }
+
+        return 0;
     }
 }
