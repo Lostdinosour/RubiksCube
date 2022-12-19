@@ -25,6 +25,8 @@ import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import java.util.Arrays;
+
 import me.rubik.rubikscube.MainActivity;
 import me.rubik.rubikscube.R;
 import me.rubik.rubikscube.databinding.ActivityInsertCameraCubeBinding;
@@ -122,14 +124,74 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame frame) {
-//        Imgproc.cvtColor(frame.rgba(), mat1, Imgproc.COLOR_BGR2HSV);
-//        Core.inRange(mat1, scalarLow, scalarHigh, mat2);
+        Mat mat = frame.rgba();
+        int size = 500;
 
+        int per = 500 / 3;
+
+        int YTop = (int) (getY(screenHeight, mat.height()) - size / 2f);
+        int YBottom = (int) (getY(screenHeight, mat.height()) + size / 2f);
+
+        int XTop = (int) (getX(screenWidth, mat.width()) - size / 2f);
+        int XBottom = (int) (getX(screenWidth, mat.width()) + size / 2f);
+
+        System.out.println(YTop);
+        System.out.println(YBottom);
+        System.out.println(XTop);
+        System.out.println(XBottom);
+
+        for (int i = 0; i < 3; i++) {
+            int YTop2 = YTop + i * per;
+            int YBottom2 = YBottom + (3 - i + 1) * per;
+
+            for (int j = 0; j < 3; j++) {
+                int XTop2 = XTop + j * per;
+                int XBottom2 = XBottom + (3 - j + 1) * per;
+
+                System.out.println(YTop2);
+                System.out.println(YBottom2);
+                System.out.println(XTop2);
+                System.out.println(XBottom2);
+
+
+                //double[] color = getAverage(mat, YTop2, YBottom2, XTop2, XBottom2);
+                //System.out.println(Arrays.toString(color));
+            }
+
+        }
         return frame.rgba();
     }
 
+    private int getX(int screenWidth, int cameraWidth) {
+        float verhouding = ((float) cameraWidth) / screenWidth;
 
+        return (int) (cameraWidth * verhouding / 2f);
+    }
 
+    private int getY(int screenHeight, int cameraHeight) {
+        float verhouding = ((float) cameraHeight) / screenHeight;
 
+        return (int) (cameraHeight * verhouding / 2f - 500 / 2f);
+    }
 
+    private double[] getAverage(Mat mat, int YTop, int YBottom, int XTop, int XBottom) {
+        double RTotal = 0;
+        double GTotal = 0;
+        double BTotal = 0;
+
+        for (int y = YTop; y <= YBottom; y++) {
+            for (int x = XTop; x <= XBottom; x++) {
+                double[] rgb = mat.get(y, x);
+                if (rgb == null) {
+                    System.out.println("wtf");
+                    continue;
+                }
+                RTotal += rgb[0];
+                GTotal += rgb[1];
+                BTotal += rgb[2];
+            }
+        }
+
+        return new double[] {RTotal / 250000, GTotal / 250000, BTotal / 250000};
+    }
 }
