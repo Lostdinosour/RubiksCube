@@ -1,6 +1,7 @@
 package me.rubik.rubikscube.ui.timer;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import me.rubik.rubikscube.database.Times;
 import me.rubik.rubikscube.database.TimesDao;
 import me.rubik.rubikscube.databinding.FragmentTimerBinding;
 import me.rubik.rubikscube.scrambler.Scrambler;
+import me.rubik.rubikscube.ui.solver.InsertCubeActivity;
 
 public class TimerFragment extends Fragment {
 
@@ -78,6 +80,14 @@ public class TimerFragment extends Fragment {
                         DatabaseHandler.getDatabase().deleteAll();
                     }
                 }.start();
+            }
+        });
+
+        binding.buttonTimeGraph.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(TimerFragment.this.getActivity(), TimerGraphActivity.class);
+                startActivity(myIntent);
             }
         });
         regenScramble();

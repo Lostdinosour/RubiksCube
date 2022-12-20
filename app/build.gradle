@@ -35,6 +35,8 @@ android {
 dependencies {
 
     implementation project(path: ':opencv')
+    implementation fileTree(dir: 'libraries', include: ['*.jar'])
+    implementation files('libraries/achartengine-1.2.0.jar')
     def room_version = "2.4.3"
 
     implementation "androidx.room:room-runtime:$room_version"

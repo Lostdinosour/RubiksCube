@@ -109,6 +109,9 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
                         int XBottom2 = XBottom - (3 - (j + 1)) * per;
 
                         double[] color = getAverage(mat, XTop2, XBottom2, YTop2, YBottom2);
+                        System.out.println(color[0]);
+                        System.out.println(color[1]);
+                        System.out.println(color[2]);
                         color[0] *= 13;
                         color[1] *= 13;
                         color[2] *= 13;
@@ -257,6 +260,7 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
             double d = (color[0] - color2[0]) * (color[0] - color2[0]) + (color[1] - color2[1]) * (color[1] - color2[1]) + (color[2] - color2[2]) * (color[2] - color2[2]);
             if (d < closest) {
                 closestColor = color2;
+                closest = d;
             }
         }
 
