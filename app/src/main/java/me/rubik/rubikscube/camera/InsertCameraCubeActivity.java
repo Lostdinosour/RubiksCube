@@ -1,5 +1,6 @@
 package me.rubik.rubikscube.camera;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
@@ -13,29 +14,23 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.JavaCameraView;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.logging.Logger;
+import java.util.Map;
 
-import me.rubik.rubikscube.MainActivity;
-import me.rubik.rubikscube.R;
 import me.rubik.rubikscube.databinding.ActivityInsertCameraCubeBinding;
 import me.rubik.rubikscube.ui.solver.InsertCubeActivity;
+import me.rubik.rubikscube.ui.solver.InsertSideActivity;
 
 public class InsertCameraCubeActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
-
+    private ActionBar actionBar;
     private PortraitCameraView camera;
 
     private ActivityInsertCameraCubeBinding binding;
@@ -48,7 +43,7 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
 
     private int centerColor;
 
-
+    int size = 500;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,8 +67,6 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(10);
 
-        int size = 500;
-
         canvas.drawRect((screenWidth / 2f) - (size / 2f), (screenHeight / 2f) - (size / 2f), (screenWidth / 2f) + (size / 2f), (screenHeight / 2f) + (size / 2f), paint);
 
         setContentView(binding.getRoot());
@@ -90,6 +83,105 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
         } else {
             camera.setCameraPermissionGranted();
         }
+
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle("Camera");
+
+        binding.buttonTake.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int per = size / 3;
+
+                int YTop = (int) (getY(screenHeight, mat.height()) - size / 2f);
+                int YBottom = (int) (getY(screenHeight, mat.height()) + size / 2f);
+
+                int XTop = (int) (getX(screenWidth, mat.width()) - size / 2f);
+                int XBottom = (int) (getX(screenWidth, mat.width()) + size / 2f);
+
+                ArrayList<Integer> squares = new ArrayList<>();
+
+                for (int i = 0; i < 3; i++) {
+                    int YTop2 = YTop + i * per;
+                    int YBottom2 = YBottom - (3 - (i + 1)) * per;
+                    for (int j = 0; j < 3; j++) {
+                        int XTop2 = XTop + j * per;
+                        int XBottom2 = XBottom - (3 - (j + 1)) * per;
+
+                        double[] color = getAverage(mat, XTop2, XBottom2, YTop2, YBottom2);
+                        color[0] *= 13;
+                        color[1] *= 13;
+                        color[2] *= 13;
+                        int col = getColor(color);
+                        squares.add(col);
+
+                    }
+                }
+
+                    Map<String, ArrayList<Integer>> cubeArray = InsertCubeActivity.cubeArray;
+                    ArrayList<Integer> side = cubeArray.get(ColorToSide(centerColor));
+
+                    side.set(0, squares.get(0));
+                    side.set(1, squares.get(1));
+                    side.set(2, squares.get(2));
+                    side.set(3, squares.get(3));
+                    side.set(5, squares.get(5));
+                    side.set(6, squares.get(6));
+                    side.set(7, squares.get(7));
+                    side.set(8, squares.get(8));
+
+                    Intent myIntent = new Intent(InsertCameraCubeActivity.this, InsertSideActivity.class);
+                    myIntent.putExtra("side", ColorToInt(centerColor));
+                    startActivity(myIntent);
+
+            }
+        });
+    }
+
+    private String ColorToSide(int color) {
+        switch (color) {
+            case 16777215:
+                return "up";
+            case 16734208:
+                return "left";
+            case 39752:
+                return "front";
+            case 11997748:
+                return "right";
+            case 16766208:
+                return "bottom";
+            case 18093:
+                return "back";
+        }
+        return "up";
+    }
+
+    private int ColorToInt(int color) {
+        switch (color) {
+            case 16777215:
+                return 1;
+            case 16734208:
+                return 2;
+            case 39752:
+                return 3;
+            case 11997748:
+                return 4;
+            case 16766208:
+                return 5;
+            case 18093:
+                return 6;
+        }
+        return 1;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -119,58 +211,11 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
     public void onCameraViewStarted(int width, int height) {
     }
 
+    private Mat mat;
+
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame frame) {
-        Mat mat = frame.rgba();
-        int size = 500;
-
-        int per = 500 / 3;
-
-        int YTop = (int) (getY(screenHeight, mat.height()) - size / 2f);
-        int YBottom = (int) (getY(screenHeight, mat.height()) + size / 2f);
-
-        int XTop = (int) (getX(screenWidth, mat.width()) - size / 2f);
-        int XBottom = (int) (getX(screenWidth, mat.width()) + size / 2f);
-
-        ArrayList<Integer> squares = new ArrayList<>();
-
-        for (int i = 0; i < 3; i++) {
-            int YTop2 = YTop + i * per;
-            int YBottom2 = YBottom - (3 - (i + 1)) * per;
-            for (int j = 0; j < 3; j++) {
-                int XTop2 = XTop + j * per;
-                int XBottom2 = XBottom - (3 - (j + 1)) * per;
-
-                double[] color = getAverage(mat, XTop2, XBottom2, YTop2, YBottom2);
-                color[0] *= 13;
-                color[1] *= 13;
-                color[2] *= 13;
-                int col = getColor(color);
-                if (col == 0) {
-                    i = 1000;
-                    break;
-                }
-
-                squares.add(col);
-
-            }
-        }
-
-        if (squares.size() == 9) {
-            System.out.println(centerColor);
-            if (squares.get(4) == centerColor) {
-                Logger.getLogger("global").warning(String.valueOf(squares.get(0)));
-                Logger.getLogger("global").warning(String.valueOf(squares.get(1)));
-                Logger.getLogger("global").warning(String.valueOf(squares.get(2)));
-                Logger.getLogger("global").warning(String.valueOf(squares.get(3)));
-                Logger.getLogger("global").warning(String.valueOf(squares.get(4)));
-                Logger.getLogger("global").warning(String.valueOf(squares.get(5)));
-                Logger.getLogger("global").warning(String.valueOf(squares.get(6)));
-                Logger.getLogger("global").warning(String.valueOf(squares.get(7)));
-                Logger.getLogger("global").warning(String.valueOf(squares.get(8)));
-            }
-        }
-
+        mat = frame.rgba();
         return mat;
     }
 
@@ -203,48 +248,52 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
         return new double[] {RTotal / 250000, GTotal / 250000, BTotal / 250000};
     }
 
-    final int offset = 50;
-
     private int getColor(double[] color) {
+        double closest = 999999999;
+        int[] closestColor = new int[] {0, 0, 0};
 
-
-
-        if (color[0] - 255 > -offset) { // white, orange, yellow
-            if (color[1] - 255 > -offset) { // white
-                if (color[2] - 255 > -offset) {
-                    return getColor(R.color.white);
-                }
-            } else if (color[1] - 213 > -offset && color[1] - 213 < offset) { // yellow
-                if (color[2] < offset) {
-                    return getColor(R.color.yellow);
-                }
-            } else if (color[1] - 88 > -offset && color[1] - 88 < offset) { // orange
-                if (color[2] < offset) {
-                    return getColor(R.color.orange);
-                }
+        for (int i = 1; i <= 6; i++) {
+            int[] color2 = IntToColor(i);
+            double d = (color[0] - color2[0]) * (color[0] - color2[0]) + (color[1] - color2[1]) * (color[1] - color2[1]) + (color[2] - color2[2]) * (color[2] - color2[2]);
+            if (d < closest) {
+                closestColor = color2;
             }
         }
 
-        else if (color[0] < offset) { // green, blue
-            if (color[1] - 155 > -offset && color[1] - 155 < offset) { // green
-                if (color[2] - 72 > -offset && color[2] - 72 < offset) {
-                    return getColor(R.color.green);
-                }
-            } else if (color[1] - 70 > -offset && color[1] - 70 < offset) { // blue
-                if (color[2] - 173 > -offset && color[2] - 173 < offset) {
-                    return getColor(R.color.blue);
-                }
-            }
+        String hex1 = Integer.toHexString(closestColor[0]);
+        String hex2 = Integer.toHexString(closestColor[1]);
+        String hex3 = Integer.toHexString(closestColor[2]);
+
+        if (hex1.length() != 2) {
+            hex1 = "0" + hex1;
+        }
+        if (hex2.length() != 2) {
+            hex2 = "0" + hex2;
+        }
+        if (hex3.length() != 2) {
+            hex3 = "0" + hex3;
         }
 
-        else if (color[0] - 183 > -offset && color[0] - 183 < offset) { // red
-            if (color[1] - 18 > -offset && color[1] - 18 < offset) {
-                if (color[2] - 52 > -offset && color[2] - 52 < offset) {
-                    return getColor(R.color.red);
-                }
-            }
+        String colorHex = "ff" + hex1 + hex2 + hex3;
+        return (int) Long.parseLong(colorHex, 16);
+    }
+
+    private int[] IntToColor(int integer) {
+        switch (integer) {
+            case 1:
+                return new int[] {255, 255, 255};
+            case 2:
+                return new int[] {255, 88, 0};
+            case 3:
+                return new int[] {0, 155, 72};
+            case 4:
+                return new int[] {183, 18, 52};
+            case 5:
+                return new int[] {255, 213, 0};
+            case 6:
+                return new int[] {0, 70, 173};
         }
 
-        return 0;
+        return new int[] {255, 255, 255};
     }
 }

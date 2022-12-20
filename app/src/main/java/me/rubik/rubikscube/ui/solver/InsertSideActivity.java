@@ -13,7 +13,6 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 
-import me.rubik.rubikscube.MainActivity;
 import me.rubik.rubikscube.R;
 import me.rubik.rubikscube.camera.InsertCameraCubeActivity;
 import me.rubik.rubikscube.databinding.ActivityInsertSideBinding;
