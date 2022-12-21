@@ -23,21 +23,18 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.core.Mat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import me.rubik.rubikscube.databinding.ActivityInsertCameraCubeBinding;
 import me.rubik.rubikscube.ui.solver.InsertCubeActivity;
 import me.rubik.rubikscube.ui.solver.InsertSideActivity;
 
 public class InsertCameraCubeActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
-    private ActionBar actionBar;
     private PortraitCameraView camera;
 
     private ActivityInsertCameraCubeBinding binding;
-
-    private ImageView imageView;
-    private Bitmap bitmap;
-    private Canvas canvas;
 
     private int screenWidth, screenHeight;
 
@@ -56,12 +53,12 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
         screenWidth = metrics.widthPixels;
         screenHeight = metrics.heightPixels;
 
-        imageView = new ImageView(this);
+        ImageView imageView = new ImageView(this);
         imageView.setLayoutParams(new ConstraintLayout.LayoutParams(screenWidth, screenHeight));
         binding.getRoot().addView(imageView);
-        bitmap = Bitmap.createBitmap(screenWidth, screenHeight, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(screenWidth, screenHeight, Bitmap.Config.ARGB_8888);
         imageView.setImageBitmap(bitmap);
-        canvas = new Canvas(bitmap);
+        Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
@@ -84,7 +81,7 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
             camera.setCameraPermissionGranted();
         }
 
-        actionBar = getSupportActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Camera");
 
@@ -102,19 +99,21 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
                 ArrayList<Integer> squares = new ArrayList<>();
 
                 for (int i = 0; i < 3; i++) {
-                    int YTop2 = YTop + i * per;
-                    int YBottom2 = YBottom - (3 - (i + 1)) * per;
+                    int XTop2 = XTop + i * per;
+                    int XBottom2 = XBottom - (3 - (i + 1)) * per;
                     for (int j = 0; j < 3; j++) {
-                        int XTop2 = XTop + j * per;
-                        int XBottom2 = XBottom - (3 - (j + 1)) * per;
+                        int YTop2 = YTop + j * per;
+                        int YBottom2 = YBottom - (3 - (j + 1)) * per;
 
                         double[] color = getAverage(mat, XTop2, XBottom2, YTop2, YBottom2);
-                        System.out.println(color[0]);
-                        System.out.println(color[1]);
-                        System.out.println(color[2]);
-                        color[0] *= 13;
-                        color[1] *= 13;
-                        color[2] *= 13;
+
+                        Logger log = Logger.getLogger("global");
+                        log.warning(Arrays.toString(color));
+
+                        color[0] *= 1.2;
+                        color[1] *= 1.2;
+                        color[2] *= 1.2;
+
                         int col = getColor(color);
                         squares.add(col);
 
@@ -143,17 +142,17 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
 
     private String ColorToSide(int color) {
         switch (color) {
-            case 16777215:
+            case -1:
                 return "up";
-            case 16734208:
+            case -43008:
                 return "left";
-            case 39752:
+            case -16737464:
                 return "front";
-            case 11997748:
+            case -4779468:
                 return "right";
-            case 16766208:
+            case -11008:
                 return "bottom";
-            case 18093:
+            case -16759123:
                 return "back";
         }
         return "up";
@@ -161,17 +160,17 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
 
     private int ColorToInt(int color) {
         switch (color) {
-            case 16777215:
+            case -1:
                 return 1;
-            case 16734208:
+            case -43008:
                 return 2;
-            case 39752:
+            case -16737464:
                 return 3;
-            case 11997748:
+            case -4779468:
                 return 4;
-            case 16766208:
+            case -11008:
                 return 5;
-            case 18093:
+            case -16759123:
                 return 6;
         }
         return 1;
@@ -248,7 +247,8 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
             }
         }
 
-        return new double[] {RTotal / 250000, GTotal / 250000, BTotal / 250000};
+        int ding = (YBottom - YTop) * (XBottom - XTop);
+        return new double[] {RTotal / ding, GTotal / ding, BTotal / ding};
     }
 
     private int getColor(double[] color) {

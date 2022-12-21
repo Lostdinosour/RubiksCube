@@ -19,25 +19,19 @@ import org.achartengine.renderer.XYSeriesRenderer;
 import java.util.Date;
 import java.util.Random;
 
-import me.rubik.rubikscube.R;
-import me.rubik.rubikscube.databinding.ActivityTimerGraphBinding;
 import me.rubik.rubikscube.ui.solver.InsertCubeActivity;
 
 public class TimerGraphActivity extends AppCompatActivity {
     private ActionBar actionBar;
-    private ActivityTimerGraphBinding binding;
 
     private TimeSeries timeSeries;
     private XYMultipleSeriesDataset dataset;
     private XYMultipleSeriesRenderer renderer;
-    private XYSeriesRenderer rendererSeries;
     private GraphicalView view;
-    private Thread mThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityTimerGraphBinding.inflate(getLayoutInflater());
 
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -61,7 +55,7 @@ public class TimerGraphActivity extends AppCompatActivity {
         renderer.setBarSpacing(10);
         renderer.setShowGrid(true);
 
-        rendererSeries = new XYSeriesRenderer();
+        XYSeriesRenderer rendererSeries = new XYSeriesRenderer();
         rendererSeries.setColor(Color.RED);
         renderer.addSeriesRenderer(rendererSeries);
         rendererSeries.setFillPoints(true);
@@ -69,9 +63,9 @@ public class TimerGraphActivity extends AppCompatActivity {
 
         timeSeries = new TimeSeries("Random");
         Random random = new Random();
-        mThread = new Thread(){
-            public void run(){
-                while(true){
+        Thread mThread = new Thread() {
+            public void run() {
+                while (true) {
                     try {
                         Thread.sleep(2000L);
                     } catch (InterruptedException e) {
