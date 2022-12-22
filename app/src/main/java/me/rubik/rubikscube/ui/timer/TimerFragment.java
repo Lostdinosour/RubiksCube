@@ -48,7 +48,7 @@ public class TimerFragment extends Fragment {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (!timerStarted) {
                         startClick = System.currentTimeMillis();
-                        binding.textTimer.setTextColor(getActivity().getColor(R.color.red));
+                        binding.textTimer.setTextColor(getActivity().getColor(R.color.timer_red));
                     } else {
                         binding.textTimer.setTextColor(getActivity().getColor(R.color.black));
                         stopTimer();
@@ -67,7 +67,7 @@ public class TimerFragment extends Fragment {
         });
 
         if (timerStarted) {
-            binding.textTimer.setTextColor(getActivity().getColor(R.color.red));
+            binding.textTimer.setTextColor(getActivity().getColor(R.color.timer_red));
         } else {
             binding.textTimer.setTextColor(getActivity().getColor(R.color.black));
         }
@@ -91,6 +91,7 @@ public class TimerFragment extends Fragment {
             }
         });
         regenScramble();
+        updateBestTime();
         return root;
     }
 
@@ -153,7 +154,7 @@ public class TimerFragment extends Fragment {
                 TimesDao db = DatabaseHandler.getDatabase();
 
                 Times time = new Times();
-                time.setValues(System.currentTimeMillis(),timePast,lastScramble);
+                time.setValues(System.currentTimeMillis(), timePast, lastScramble);
                 db.insert(time);
 
                 updateBestTime();
@@ -178,8 +179,13 @@ public class TimerFragment extends Fragment {
         int miliSecs = time / 100;
 
         String formattedTime;
+
         if (minutes != 0) {
-            formattedTime = minutes + ":" + secs + "." + miliSecs;
+            String secsString = String.valueOf(secs);
+            if (secsString.length() == 1) {
+                secsString = "0" + secsString;
+            }
+            formattedTime = minutes + ":" + secsString + "." + miliSecs;
         } else {
             formattedTime = secs + "." + miliSecs;
         }

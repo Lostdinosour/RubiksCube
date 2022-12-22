@@ -13,18 +13,23 @@ import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
 import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
+import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Random;
 
+import me.rubik.rubikscube.database.DatabaseHandler;
+import me.rubik.rubikscube.database.Times;
+import me.rubik.rubikscube.database.TimesDao;
 import me.rubik.rubikscube.ui.solver.InsertCubeActivity;
 
 public class TimerGraphActivity extends AppCompatActivity {
     private ActionBar actionBar;
 
-    private TimeSeries timeSeries;
+    private XYSeries series;
     private XYMultipleSeriesDataset dataset;
     private XYMultipleSeriesRenderer renderer;
     private GraphicalView view;
@@ -35,7 +40,7 @@ public class TimerGraphActivity extends AppCompatActivity {
 
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("Camera");
+        actionBar.setTitle("Graph");
 
         dataset = new XYMultipleSeriesDataset();
 
@@ -54,6 +59,9 @@ public class TimerGraphActivity extends AppCompatActivity {
         renderer.setZoomButtonsVisible(true);
         renderer.setBarSpacing(10);
         renderer.setShowGrid(true);
+        renderer.setYLabelsColor(0, Color.RED);
+        renderer.setLabelsTextSize(50);
+
 
         XYSeriesRenderer rendererSeries = new XYSeriesRenderer();
         rendererSeries.setColor(Color.RED);
@@ -61,31 +69,27 @@ public class TimerGraphActivity extends AppCompatActivity {
         rendererSeries.setFillPoints(true);
         rendererSeries.setPointStyle(PointStyle.CIRCLE);
 
-        timeSeries = new TimeSeries("Random");
-        Random random = new Random();
-        Thread mThread = new Thread() {
+        series = new XYSeries("Solve time");
+
+        new Thread() {
+            @Override
             public void run() {
-                while (true) {
-                    try {
-                        Thread.sleep(2000L);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    timeSeries.add(new Date(), random.nextInt(10));
-                    view.repaint();
+                TimesDao database = DatabaseHandler.getDatabase();
+                Iterator<Times> times = database.getAll().iterator();
+
+                while (times.hasNext()) {
+                    Times time = times.next();
+                    series.add((double) new Date(time.date).getTime(), time.time / 1000f);
                 }
             }
-        };
-        mThread.start();
-
+        }.start();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent myIntent = new Intent(this, InsertCubeActivity.class);
-                startActivity(myIntent);
+                this.finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -94,7 +98,7 @@ public class TimerGraphActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        dataset.addSeries(timeSeries);
+        dataset.addSeries(series);
         view = ChartFactory.getTimeChartView(this, dataset, renderer, "Test");
         view.refreshDrawableState();
         view.repaint();
