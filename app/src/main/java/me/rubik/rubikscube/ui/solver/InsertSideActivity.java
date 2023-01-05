@@ -2,8 +2,12 @@ package me.rubik.rubikscube.ui.solver;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MenuItem;
@@ -48,9 +52,15 @@ public class InsertSideActivity extends AppCompatActivity {
         binding.buttonCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(InsertSideActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(InsertSideActivity.this, new String[] { Manifest.permission.CAMERA }, 100);
+                }
+
+
                 Intent myIntent = new Intent(InsertSideActivity.this, InsertCameraCubeActivity.class);
                 myIntent.putExtra("centerColor", binding.buttonCenter.getCurrentTextColor());
                 startActivity(myIntent);
+
             }
         });
 

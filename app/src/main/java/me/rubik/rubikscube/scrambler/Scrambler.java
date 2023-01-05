@@ -5,45 +5,89 @@ import java.util.Random;
 
 public class Scrambler  {
 
-    static final String[] moves = new String[] {"U", "D", "R", "L", "F", "B", "U'", "D'", "R'", "L'", "F'", "B'", "U2", "D2", "R2", "L2", "F2", "B2"};
-
     public static String genScramble() {
-        Random random = new Random();
-        ArrayList<String> moveList = new ArrayList<>();
-        for (int i = 0; i < 19; i++) {
-            moveList.add(moves[random.nextInt(18)]);
+        ArrayList<Move> moveList = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            moveList.add(Move.getRandom());
         }
-
         return compact(moveList);
     }
 
-    private static String compact(ArrayList<String> moveList) {
+    private static String compact(ArrayList<Move> moveList) {
+        StringBuilder scrambleString = new StringBuilder();
         for (int i = 0; i < moveList.size() - 2; i++) {
-            String move = moveList.get(i);
-            String nextMove = moveList.get(i + 1);
+            Move currentMove = moveList.get(i);
+            Move nextMove = moveList.get(i + 1);
 
-            if (remove(move, nextMove)) {
-                moveList.remove(i + 1);
+
+            if (currentMove.type().equals(nextMove.type())) {
+                int value = currentMove.value() + nextMove.value();
+                if (Math.abs(value) == 2) {
+                    scrambleString.append(Move.fromTypeAndValue(currentMove.type(), Math.abs(value)).name().replace("a", "'")).append(" ");
+                    i++;
+                } else if (Math.abs(value) == 3) {
+                    scrambleString.append(currentMove.name().replace("a", "'")).append(" ");
+                } else if (value != 0 && value != 4) {
+                    scrambleString.append(currentMove.name().replace("a", "'")).append(" ");
+                } else {
+                    scrambleString.append(currentMove.name().replace("a", "'")).append(" ");
+                    i++;
+                }
+
+
+
+            } else {
+                scrambleString.append(currentMove.name().replace("a", "'")).append(" ");
             }
-
         }
 
-        StringBuilder builder = new StringBuilder();
-        for (String move : moveList) {
-            builder.append(move).append(" ");
-        }
-        return builder.toString();
+        return scrambleString.toString();
     }
 
-    private static boolean remove(String move, String nextMove) {
-        if ((move + "'").equals(nextMove)) {
-            return true;
-        } else if ((nextMove + "'").equals(move)) {
-            return true;
-        } else if (move.endsWith("2") && nextMove.endsWith("2")) {
-            return move.equals(nextMove);
+    private enum Move {
+        U("U", 1),
+        D("D", 1),
+        R("R", 1),
+        L("L", 1),
+        F("F", 1),
+        B("B", 1),
+        Ua("U", -1),
+        Da("D", -1),
+        Ra("R", -1),
+        La("L", -1),
+        Fa("F", -1),
+        Ba("B", -1),
+        U2("U", 2),
+        D2("D", 2),
+        R2("R", 2),
+        L2("L", 2),
+        F2("F", 2),
+        B2("B", 2);
+
+        private final String type;
+        private final int value;
+
+        Move(String type, int value) {
+            this.type = type;
+            this.value = value;
         }
-        return false;
+
+        String type() { return type; }
+        int value() { return value; }
+
+        public static Move getRandom() {
+            return Move.values()[new Random().nextInt(18)];
+        }
+
+        public static Move fromTypeAndValue(String type, int value) {
+            for (Move move : Move.values()) {
+                if (move.type.equals(type) && move.value == value) {
+                    return move;
+                }
+            }
+
+            return null;
+        }
 
     }
 

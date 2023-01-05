@@ -3,6 +3,7 @@ package me.rubik.rubikscube.camera;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
@@ -43,6 +44,8 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
 
     private int centerColor;
 
+    private static final int CAMERA_PERMISSION_CODE = 100;
+
     int size = 500;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,11 +79,7 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
         camera.setCvCameraViewListener(this);
         camera.enableView();
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            Intent myIntent = new Intent(this, InsertCubeActivity.class);
-            startActivity(myIntent);
-            Toast.makeText(this, "Camera permission required", Toast.LENGTH_LONG).show();
-        } else {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             camera.setCameraPermissionGranted();
         }
 
