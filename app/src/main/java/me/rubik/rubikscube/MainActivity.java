@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Search.init();
         OpenCVLoader.initDebug();
-        DatabaseHandler.init(Room.databaseBuilder(getApplicationContext(), DatabaseHandler.class, "database-name").build());
+        DatabaseHandler.init(Room.databaseBuilder(getApplicationContext(), DatabaseHandler.class, "times").build());
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(R.id.navigation_solver, R.id.navigation_timer).build();
