@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:tag="TimerFragment"
-    tools:context=".ui.timer.TimerFragment">
+    tools:context=".ui.timer.TimerFragment"
+    android:keepScreenOn="true">
 
 
     <TextView
@@ -28,7 +29,7 @@
         android:layout_width="160dp"
         android:layout_height="70dp"
         android:text="@string/best_time"
-        android:textSize="18dp"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -36,23 +37,36 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.975" />
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Clear all"
+    <TextView
+        android:id="@+id/textView_averageTime"
+        android:layout_width="160dp"
+        android:layout_height="70dp"
+        android:text="@string/average_time"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.817"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.19" />
+        app:layout_constraintVertical_bias="0.931" />
+
+    <Button
+        android:id="@+id/button_timeTable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/table"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.85"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.2" />
 
     <TextView
         android:id="@+id/textView_scramble"
         android:layout_width="320dp"
         android:layout_height="47dp"
-        android:text="placeholder"
+        android:text="@string/scramble"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -65,13 +79,13 @@
         android:id="@+id/button_timeGraph"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Graph"
+        android:text="@string/graph"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.142"
+        app:layout_constraintHorizontal_bias="0.15"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.19" />
+        app:layout_constraintVertical_bias="0.2" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

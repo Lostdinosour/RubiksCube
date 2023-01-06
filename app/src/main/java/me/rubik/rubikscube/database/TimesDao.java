@@ -18,6 +18,9 @@ public interface TimesDao {
     @Delete
     void delete(Times time);
 
+    @Query("SELECT time FROM times")
+    List<Integer> getAllTimes();
+
     @Query("SELECT MIN(time) FROM times")
     int getBestTime();
 

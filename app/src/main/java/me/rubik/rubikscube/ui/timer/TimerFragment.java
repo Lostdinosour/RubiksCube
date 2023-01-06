@@ -1,5 +1,7 @@
 package me.rubik.rubikscube.ui.timer;
 
+import static me.rubik.rubikscube.utils.Utils.formatTime;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import java.io.IOException;
+import java.util.List;
 
 import me.rubik.rubikscube.R;
 import me.rubik.rubikscube.database.DatabaseHandler;
@@ -55,7 +58,7 @@ public class TimerFragment extends Fragment {
                     }
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     if (!timerStarted && startClick != 0) {
-                        if (System.currentTimeMillis() - startClick > 1500) {
+                        if (System.currentTimeMillis() - startClick > 400) {
                             startTimer();
                         } else {
                             binding.textTimer.setTextColor(getActivity().getColor(R.color.black));
@@ -71,13 +74,14 @@ public class TimerFragment extends Fragment {
         } else {
             binding.textTimer.setTextColor(getActivity().getColor(R.color.black));
         }
-        binding.button.setOnClickListener(new View.OnClickListener() {
+        binding.buttonTimeTable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new Thread() {
                     @Override
                     public void run() {
-                        DatabaseHandler.getDatabase().deleteAll();
+                        Intent myIntent = new Intent(getActivity(), TimerTableActivity.class);
+                        startActivity(myIntent);
                     }
                 }.start();
             }
@@ -86,12 +90,13 @@ public class TimerFragment extends Fragment {
         binding.buttonTimeGraph.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myIntent = new Intent(TimerFragment.this.getActivity(), TimerGraphActivity.class);
+                Intent myIntent = new Intent(getActivity(), TimerGraphActivity.class);
                 startActivity(myIntent);
             }
         });
         regenScramble();
         updateBestTime();
+        updateAverageTime();
         return root;
     }
 
@@ -109,6 +114,23 @@ public class TimerFragment extends Fragment {
             public void run() {
                 String textViewString = "Best time: " + formatTime(DatabaseHandler.getDatabase().getBestTime());
                 binding.textViewBestTime.setText(textViewString);
+            }
+        }.start();
+    }
+
+    public void updateAverageTime() {
+        new Thread() {
+            @Override
+            public void run() {
+                int totalTime = 0;
+                List<Integer> times = DatabaseHandler.getDatabase().getAllTimes();
+                for (Integer time : times) {
+                    totalTime += time;
+                }
+                if (times.size() != 0) {
+                    String textViewString = "Average time: " + formatTime(totalTime / times.size());
+                    binding.textViewAverageTime.setText(textViewString);
+                }
             }
         }.start();
     }
@@ -154,10 +176,11 @@ public class TimerFragment extends Fragment {
                 TimesDao db = DatabaseHandler.getDatabase();
 
                 Times time = new Times();
-                time.setValues(System.currentTimeMillis(), timePast, lastScramble);
+                time.setValues(System.currentTimeMillis(), timePast);
                 db.insert(time);
 
                 updateBestTime();
+                updateAverageTime();
                 regenScramble();
             }
         }.start();
@@ -169,28 +192,6 @@ public class TimerFragment extends Fragment {
         }
         Fragment navHostFragment = currentActivity.getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
         return navHostFragment == null ? null : navHostFragment.getChildFragmentManager().getFragments().get(0);
-    }
-
-    public String formatTime(int time) {
-        int minutes = ((time / 1000) / 60);
-        time -= (minutes * 60) * 1000;
-        int secs = (time / 1000);
-        time -= secs * 1000;
-        int miliSecs = time / 100;
-
-        String formattedTime;
-
-        if (minutes != 0) {
-            String secsString = String.valueOf(secs);
-            if (secsString.length() == 1) {
-                secsString = "0" + secsString;
-            }
-            formattedTime = minutes + ":" + secsString + "." + miliSecs;
-        } else {
-            formattedTime = secs + "." + miliSecs;
-        }
-
-        return formattedTime;
     }
 
 }

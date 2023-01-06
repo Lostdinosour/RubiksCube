@@ -18,7 +18,7 @@
         android:theme="@style/Theme.RubiksCube"
         tools:targetApi="31">
         <activity
-            android:name=".TimerTableActivity"
+            android:name=".ui.timer.TimerTableActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

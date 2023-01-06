@@ -27,7 +27,6 @@ import me.rubik.rubikscube.database.TimesDao;
 import me.rubik.rubikscube.ui.solver.InsertCubeActivity;
 
 public class TimerGraphActivity extends AppCompatActivity {
-    private ActionBar actionBar;
 
     private XYSeries series;
     private XYMultipleSeriesDataset dataset;
@@ -38,7 +37,7 @@ public class TimerGraphActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        actionBar = getSupportActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Graph");
 
