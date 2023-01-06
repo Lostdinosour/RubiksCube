@@ -36,17 +36,6 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
     }
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-//        if (requestCode == 10) {
-//            if (grantResults.length <= 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-//                Toast.makeText(this, "Camera permission required to insert cube with camera.", Toast.LENGTH_LONG).show();
-//                this.finish();
-//            }
-//        } else {
-//            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        }
-//    }
 
 
 }
