@@ -28,6 +28,7 @@ import me.rubik.rubikscube.ui.solver.InsertCubeActivity;
 
 public class TimerFragment extends Fragment {
 
+    @SuppressLint("all")
     private static FragmentTimerBinding binding;
 
     private long startClick;
