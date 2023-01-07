@@ -20,15 +20,15 @@ import java.util.ArrayList;
 import me.rubik.rubikscube.R;
 import me.rubik.rubikscube.camera.InsertCameraCubeActivity;
 import me.rubik.rubikscube.databinding.ActivityInsertSideBinding;
-import me.rubik.rubikscube.utils.CubeEnum;
+import me.rubik.rubikscube.utils.Side;
+import me.rubik.rubikscube.utils.Squares;
 
 public class InsertSideActivity extends AppCompatActivity {
 
-    private ActionBar actionBar;
     private GestureDetector gestureDetector;
 
     private ActivityInsertSideBinding binding;
-    private CubeEnum side;
+    private Side side;
     private Intent intent;
 
     @Override
@@ -37,42 +37,43 @@ public class InsertSideActivity extends AppCompatActivity {
         binding = ActivityInsertSideBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         intent = getIntent();
-        side = IntToSide(intent.getIntExtra("side", 1));
+        side = Side.intToSide(intent.getIntExtra("side", 1));
         this.setColors();
 
-        binding.buttonTopLeft.setOnClickListener(new ClickListener(CubeEnum.topLeft));
-        binding.buttonTopCenter.setOnClickListener(new ClickListener(CubeEnum.topCenter));
-        binding.buttonTopRight.setOnClickListener(new ClickListener(CubeEnum.topRight));
-        binding.buttonLeftCenter.setOnClickListener(new ClickListener(CubeEnum.leftCenter));
-        binding.buttonRightCenter.setOnClickListener(new ClickListener(CubeEnum.rightCenter));
-        binding.buttonBottomLeft.setOnClickListener(new ClickListener(CubeEnum.bottomLeft));
-        binding.buttonBottomCenter.setOnClickListener(new ClickListener(CubeEnum.bottomCenter));
-        binding.buttonBottomRight.setOnClickListener(new ClickListener(CubeEnum.bottomRight));
+        setButtonListeners();
 
-        binding.buttonCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(InsertSideActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(InsertSideActivity.this, new String[] { Manifest.permission.CAMERA }, 100);
-                }
-
-
-                Intent myIntent = new Intent(InsertSideActivity.this, InsertCameraCubeActivity.class);
-                myIntent.putExtra("centerColor", binding.buttonCenter.getCurrentTextColor());
-                startActivity(myIntent);
-
-            }
-        });
-
-        actionBar = getSupportActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Insert side");
 
         gestureDetector = new GestureDetector(this, new GestureListener());
     }
 
+    private void setButtonListeners() {
+        binding.buttonTopLeft.setOnClickListener(new ClickListener(Squares.topLeft));
+        binding.buttonTopCenter.setOnClickListener(new ClickListener(Squares.topCenter));
+        binding.buttonTopRight.setOnClickListener(new ClickListener(Squares.topRight));
+        binding.buttonLeftCenter.setOnClickListener(new ClickListener(Squares.leftCenter));
+        binding.buttonRightCenter.setOnClickListener(new ClickListener(Squares.rightCenter));
+        binding.buttonBottomLeft.setOnClickListener(new ClickListener(Squares.bottomLeft));
+        binding.buttonBottomCenter.setOnClickListener(new ClickListener(Squares.bottomCenter));
+        binding.buttonBottomRight.setOnClickListener(new ClickListener(Squares.bottomRight));
+
+        binding.buttonCamera.setOnClickListener(v -> {
+            if (ContextCompat.checkSelfPermission(InsertSideActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(InsertSideActivity.this, new String[] { Manifest.permission.CAMERA }, 100);
+            }
+
+
+            Intent myIntent = new Intent(InsertSideActivity.this, InsertCameraCubeActivity.class);
+            myIntent.putExtra("centerColor", binding.buttonCenter.getCurrentTextColor());
+            startActivity(myIntent);
+
+        });
+    }
+
     private void setColors() {
-        ArrayList<Integer> colors = InsertCubeActivity.cubeArray.get(SideToString(side));
+        ArrayList<Integer> colors = InsertCubeActivity.cubeArray.get(side.name());
 
         binding.buttonTopLeft.setBackgroundColor(colors.get(0));
         binding.buttonTopLeft.setTextColor(colors.get(0));
@@ -94,60 +95,21 @@ public class InsertSideActivity extends AppCompatActivity {
         binding.buttonBottomRight.setTextColor(colors.get(8));
     }
 
-    private CubeEnum IntToSide(int number) {
-        switch (number) {
-            case 1:
-                return CubeEnum.sideUp;
-            case 2:
-                return CubeEnum.sideLeft;
-            case 3:
-                return CubeEnum.sideFront;
-            case 4:
-                return CubeEnum.sideRight;
-            case 5:
-                return CubeEnum.sideDown;
-            case 6:
-                return CubeEnum.sideBack;
-        }
-
-        return CubeEnum.sideUp;
-    }
-    private String SideToString(CubeEnum side) {
-        switch (side) {
-            case sideUp:
-                return "up";
-            case sideLeft:
-                return "left";
-            case sideFront:
-                return "front";
-            case sideRight:
-                return "right";
-            case sideDown:
-                return "down";
-            case sideBack:
-                return "back";
-        }
-
-        return "up";
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                Intent myIntent = new Intent(this, InsertCubeActivity.class);
-                startActivity(myIntent);
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            Intent myIntent = new Intent(this, InsertCubeActivity.class);
+            startActivity(myIntent);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private class ClickListener implements View.OnClickListener {
 
-        private final CubeEnum square;
+        private final Squares square;
 
-        public ClickListener(CubeEnum square) {
+        public ClickListener(Squares square) {
             this.square = square;
         }
 
@@ -197,7 +159,7 @@ public class InsertSideActivity extends AppCompatActivity {
                 color = getNextColor(currentColor);
                 button.setBackgroundColor(color);
                 button.setTextColor(color);
-                InsertCubeActivity.cubeArray.get(SideToString(side)).set(clickedSquare, color);
+                InsertCubeActivity.cubeArray.get(side.name()).set(clickedSquare, color);
             }
         }
 
@@ -249,7 +211,6 @@ public class InsertSideActivity extends AppCompatActivity {
     }
 
     private int getNextSide(String direction) {
-
         int currentSide = intent.getIntExtra("side", 1);
         int nextSide;
 

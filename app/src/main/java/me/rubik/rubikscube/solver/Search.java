@@ -110,28 +110,6 @@ public class Search {
         }
     }
 
-    public synchronized String next(long probeMax, long probeMin, int verbose) {
-        this.probe = 0;
-        this.probeMax = probeMax;
-        this.probeMin = Math.min(probeMin, probeMax);
-        this.solution = null;
-        this.isRec = (this.verbose & OPTIMAL_SOLUTION) == (verbose & OPTIMAL_SOLUTION);
-        this.verbose = verbose;
-        return (verbose & OPTIMAL_SOLUTION) == 0 ? search() : searchopt();
-    }
-
-    public static boolean isInited() {
-        return inited;
-    }
-
-    public long numberOfProbes() {
-        return probe;
-    }
-
-    public int length() {
-        return solLen;
-    }
-
     public synchronized static void init() {
         CoordCube.init(true);
         inited = true;
@@ -374,7 +352,7 @@ public class Search {
                     continue;
                 }
 
-                int prun = nodeUD[maxl].doMovePrun(node, m, true);
+                int prun = nodeUD[maxl].doMovePrun(node, m);
                 if (prun > maxl) {
                     break;
                 } else if (prun == maxl) {
@@ -407,7 +385,7 @@ public class Search {
         int maxprun1 = 0;
         int maxprun2 = 0;
         for (int i = 0; i < 6; i++) {
-            urfCoordCube[i].calcPruning(false);
+            urfCoordCube[i].calcPruning();
             if (i < 3) {
                 maxprun1 = Math.max(maxprun1, urfCoordCube[i].prun);
             } else {
@@ -417,7 +395,7 @@ public class Search {
         urfIdx = maxprun2 > maxprun1 ? 3 : 0;
         phase1Cubie[0] = urfCubieCube[urfIdx];
         for (length1 = isRec ? length1 : 0; length1 < solLen; length1++) {
-            CoordCube ud = urfCoordCube[0 + urfIdx];
+            CoordCube ud = urfCoordCube[urfIdx];
             CoordCube rl = urfCoordCube[1 + urfIdx];
             CoordCube fb = urfCoordCube[2 + urfIdx];
 
@@ -450,7 +428,7 @@ public class Search {
                     continue;
                 }
 
-                int prun_ud = Math.max(nodeUD[maxl].doMovePrun(ud, m, false),
+                int prun_ud = Math.max(nodeUD[maxl].doMovePrun(ud, m),
                         USE_CONJ_PRUN ? nodeUD[maxl].doMovePrunConj(ud, m) : 0);
                 if (prun_ud > maxl) {
                     break;
@@ -460,7 +438,7 @@ public class Search {
 
                 m = CubieCube.urfMove[2][m];
 
-                int prun_rl = Math.max(nodeRL[maxl].doMovePrun(rl, m, false),
+                int prun_rl = Math.max(nodeRL[maxl].doMovePrun(rl, m),
                         USE_CONJ_PRUN ? nodeRL[maxl].doMovePrunConj(rl, m) : 0);
                 if (prun_rl > maxl) {
                     break;
@@ -470,7 +448,7 @@ public class Search {
 
                 m = CubieCube.urfMove[2][m];
 
-                int prun_fb = Math.max(nodeFB[maxl].doMovePrun(fb, m, false),
+                int prun_fb = Math.max(nodeFB[maxl].doMovePrun(fb, m),
                         USE_CONJ_PRUN ? nodeFB[maxl].doMovePrunConj(fb, m) : 0);
                 if (prun_ud == prun_rl && prun_rl == prun_fb && prun_fb != 0) {
                     prun_fb++;

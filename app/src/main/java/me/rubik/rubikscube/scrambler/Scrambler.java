@@ -18,7 +18,6 @@ public class Scrambler  {
         for (int i = 0; i < moveList.size() - 2; i++) {
             Move currentMove = moveList.get(i);
             Move nextMove = moveList.get(i + 1);
-
             if (currentMove.type().equals(nextMove.type())) {
                 int value = currentMove.value() + nextMove.value();
                 if (Math.abs(value) == 2) {

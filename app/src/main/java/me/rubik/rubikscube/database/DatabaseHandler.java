@@ -3,7 +3,7 @@ package me.rubik.rubikscube.database;
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {Times.class}, version = 1)
+@Database(entities = {Times.class}, version = 1, exportSchema = false)
 public abstract class DatabaseHandler extends RoomDatabase {
     private static DatabaseHandler db;
 

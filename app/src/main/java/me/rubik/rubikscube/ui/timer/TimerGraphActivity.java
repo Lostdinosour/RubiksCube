@@ -31,7 +31,6 @@ public class TimerGraphActivity extends AppCompatActivity {
     private XYSeries series;
     private XYMultipleSeriesDataset dataset;
     private XYMultipleSeriesRenderer renderer;
-    private GraphicalView view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +97,7 @@ public class TimerGraphActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         dataset.addSeries(series);
-        view = ChartFactory.getTimeChartView(this, dataset, renderer, "Test");
+        GraphicalView view = ChartFactory.getTimeChartView(this, dataset, renderer, null);
         view.refreshDrawableState();
         view.repaint();
         setContentView(view);

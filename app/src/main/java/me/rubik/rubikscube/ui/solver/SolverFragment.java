@@ -23,13 +23,15 @@ public class SolverFragment extends Fragment {
     private FragmentSolverBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        SolverViewModel solverViewModel = new ViewModelProvider(this).get(SolverViewModel.class);
         binding = FragmentSolverBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textSolver;
-        solverViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        setButtonListeners();
 
+        return root;
+    }
+
+    public void setButtonListeners() {
         binding.buttonInsertCube.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -53,7 +55,6 @@ public class SolverFragment extends Fragment {
                 }
             }
         });
-        return root;
     }
 
     private boolean checkIfPossible() {

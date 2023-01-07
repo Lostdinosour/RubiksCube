@@ -1,12 +1,11 @@
 package me.rubik.rubikscube.utils;
 
-public enum CubeEnum {
+public enum Squares {
     topLeft,
     topCenter,
     topRight,
 
     rightCenter,
-    center,
     leftCenter,
 
     bottomLeft,
@@ -14,11 +13,7 @@ public enum CubeEnum {
     bottomRight,
 
 
-    sideUp,
-    sideRight,
-    sideDown,
-    sideBack,
-    sideLeft,
-    sideFront
+
+
 
 }

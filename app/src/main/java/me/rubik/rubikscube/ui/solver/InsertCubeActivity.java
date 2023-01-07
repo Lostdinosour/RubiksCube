@@ -15,12 +15,11 @@ import java.util.Map;
 import me.rubik.rubikscube.MainActivity;
 import me.rubik.rubikscube.R;
 import me.rubik.rubikscube.databinding.ActivityInsertCubeBinding;
-import me.rubik.rubikscube.utils.CubeEnum;
+import me.rubik.rubikscube.utils.Side;
 
 public class InsertCubeActivity extends AppCompatActivity {
-    private ActionBar actionBar;
 
-    private ActivityInsertCubeBinding binding;
+    ActivityInsertCubeBinding binding;
 
     public static Map<String, ArrayList<Integer>> cubeArray;
 
@@ -29,19 +28,25 @@ public class InsertCubeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityInsertCubeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        binding.buttonCubeUp.setOnClickListener(new ClickListener(CubeEnum.sideUp));
-        binding.buttonCubeLeft.setOnClickListener(new ClickListener(CubeEnum.sideLeft));
-        binding.buttonCubeFront.setOnClickListener(new ClickListener(CubeEnum.sideFront));
-        binding.buttonCubeRight.setOnClickListener(new ClickListener(CubeEnum.sideRight));
-        binding.buttonCubeDown.setOnClickListener(new ClickListener(CubeEnum.sideDown));
-        binding.buttonCubeBack.setOnClickListener(new ClickListener(CubeEnum.sideBack));
-        actionBar = getSupportActionBar();
+
+        setButtonListeners();
+
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Insert cube");
 
         if (cubeArray == null) {
             cubeArray = createDefaultCubeArray();
         }
+    }
+
+    private void setButtonListeners() {
+        binding.buttonCubeUp.setOnClickListener(new ClickListener(Side.up));
+        binding.buttonCubeLeft.setOnClickListener(new ClickListener(Side.left));
+        binding.buttonCubeFront.setOnClickListener(new ClickListener(Side.front));
+        binding.buttonCubeRight.setOnClickListener(new ClickListener(Side.right));
+        binding.buttonCubeDown.setOnClickListener(new ClickListener(Side.down));
+        binding.buttonCubeBack.setOnClickListener(new ClickListener(Side.back));
     }
 
     public Map<String, ArrayList<Integer>> createDefaultCubeArray() {
@@ -58,51 +63,31 @@ public class InsertCubeActivity extends AppCompatActivity {
             cubeArray.put(names[i], list);
         }
 
-
         return cubeArray;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                Intent myIntent = new Intent(this, MainActivity.class);
-                startActivity(myIntent);
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            Intent myIntent = new Intent(this, MainActivity.class);
+            startActivity(myIntent);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private class ClickListener implements View.OnClickListener {
-        private final CubeEnum side;
+        private final Side side;
 
-        public ClickListener(CubeEnum side) {
+        public ClickListener(Side side) {
             this.side = side;
         }
 
         @Override
         public void onClick(View view) {
             Intent myIntent = new Intent(InsertCubeActivity.this, InsertSideActivity.class);
-            myIntent.putExtra("side", SideToInt(side));
+            myIntent.putExtra("side", side.integerValue());
             InsertCubeActivity.this.startActivity(myIntent);
         }
-    }
-
-    private int SideToInt(CubeEnum side) {
-        switch (side) {
-            case sideUp:
-                return 1;
-            case sideLeft:
-                return 2;
-            case sideFront:
-                return 3;
-            case sideRight:
-                return 4;
-            case sideDown:
-                return 5;
-            case sideBack:
-                return 6;
-        }
-        return 1;
     }
 }

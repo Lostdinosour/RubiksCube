@@ -3,7 +3,6 @@ package me.rubik.rubikscube.camera;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
@@ -18,7 +17,6 @@ import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.core.Mat;
@@ -31,6 +29,8 @@ import java.util.logging.Logger;
 import me.rubik.rubikscube.databinding.ActivityInsertCameraCubeBinding;
 import me.rubik.rubikscube.ui.solver.InsertCubeActivity;
 import me.rubik.rubikscube.ui.solver.InsertSideActivity;
+import me.rubik.rubikscube.utils.Side;
+import me.rubik.rubikscube.utils.Utils;
 
 public class InsertCameraCubeActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
     private PortraitCameraView camera;
@@ -40,10 +40,7 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
     private int screenWidth, screenHeight;
 
     private int centerColor;
-
-    private static final int CAMERA_PERMISSION_CODE = 100;
-
-    int size = 500;
+    final int size = 500;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +48,25 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
         Intent intent = getIntent();
         centerColor = intent.getIntExtra("centerColor", 0);
 
+        setContentView(binding.getRoot());
+        drawRectangle();
+
+        camera = binding.JavaCameraViewCamera;
+        camera.setCameraIndex(0);
+        camera.setCvCameraViewListener(this);
+        camera.enableView();
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            camera.setCameraPermissionGranted();
+        }
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle("Camera");
+        setButtonListeners();
+    }
+
+    private void drawRectangle() {
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         screenWidth = metrics.widthPixels;
@@ -66,24 +82,10 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(10);
-
         canvas.drawRect((screenWidth / 2f) - (size / 2f), (screenHeight / 2f) - (size / 2f), (screenWidth / 2f) + (size / 2f), (screenHeight / 2f) + (size / 2f), paint);
+    }
 
-        setContentView(binding.getRoot());
-
-        camera = binding.JavaCameraViewCamera;
-        camera.setCameraIndex(0);
-        camera.setCvCameraViewListener(this);
-        camera.enableView();
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            camera.setCameraPermissionGranted();
-        }
-
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("Camera");
-
+    private void setButtonListeners() {
         binding.buttonTake.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,68 +121,31 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
                     }
                 }
 
-                    Map<String, ArrayList<Integer>> cubeArray = InsertCubeActivity.cubeArray;
-                    ArrayList<Integer> side = cubeArray.get(ColorToSide(centerColor));
+                Map<String, ArrayList<Integer>> cubeArray = InsertCubeActivity.cubeArray;
+                ArrayList<Integer> side = cubeArray.get(Side.colorToSide(centerColor).name());
 
-                    side.set(0, squares.get(0));
-                    side.set(1, squares.get(1));
-                    side.set(2, squares.get(2));
-                    side.set(3, squares.get(3));
-                    side.set(5, squares.get(5));
-                    side.set(6, squares.get(6));
-                    side.set(7, squares.get(7));
-                    side.set(8, squares.get(8));
+                side.set(0, squares.get(0));
+                side.set(1, squares.get(1));
+                side.set(2, squares.get(2));
+                side.set(3, squares.get(3));
+                side.set(5, squares.get(5));
+                side.set(6, squares.get(6));
+                side.set(7, squares.get(7));
+                side.set(8, squares.get(8));
 
-                    Intent myIntent = new Intent(InsertCameraCubeActivity.this, InsertSideActivity.class);
-                    myIntent.putExtra("side", ColorToInt(centerColor));
-                    startActivity(myIntent);
+                Intent myIntent = new Intent(InsertCameraCubeActivity.this, InsertSideActivity.class);
+                myIntent.putExtra("side", Side.colorToSide(centerColor).integerValue());
+                startActivity(myIntent);
 
             }
         });
     }
 
-    private String ColorToSide(int color) {
-        switch (color) {
-            case -1:
-                return "up";
-            case -43008:
-                return "left";
-            case -16737464:
-                return "front";
-            case -4779468:
-                return "right";
-            case -11008:
-                return "bottom";
-            case -16759123:
-                return "back";
-        }
-        return "up";
-    }
-
-    private int ColorToInt(int color) {
-        switch (color) {
-            case -1:
-                return 1;
-            case -43008:
-                return 2;
-            case -16737464:
-                return 3;
-            case -4779468:
-                return 4;
-            case -11008:
-                return 5;
-            case -16759123:
-                return 6;
-        }
-        return 1;
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                this.finish();
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            this.finish();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -255,7 +220,7 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
         int[] closestColor = new int[] {0, 0, 0};
 
         for (int i = 1; i <= 6; i++) {
-            int[] color2 = IntToColor(i);
+            int[] color2 = Side.intToSide(i).rgbColor();
             double d = (color[0] - color2[0]) * (color[0] - color2[0]) + (color[1] - color2[1]) * (color[1] - color2[1]) + (color[2] - color2[2]) * (color[2] - color2[2]);
             if (d < closest) {
                 closestColor = color2;
@@ -281,22 +246,4 @@ public class InsertCameraCubeActivity extends AppCompatActivity implements Camer
         return (int) Long.parseLong(colorHex, 16);
     }
 
-    private int[] IntToColor(int integer) {
-        switch (integer) {
-            case 1:
-                return new int[] {255, 255, 255};
-            case 2:
-                return new int[] {255, 88, 0};
-            case 3:
-                return new int[] {0, 155, 72};
-            case 4:
-                return new int[] {183, 18, 52};
-            case 5:
-                return new int[] {255, 213, 0};
-            case 6:
-                return new int[] {0, 70, 173};
-        }
-
-        return new int[] {255, 255, 255};
-    }
 }

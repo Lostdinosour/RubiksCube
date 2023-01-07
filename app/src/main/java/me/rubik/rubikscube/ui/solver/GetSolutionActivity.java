@@ -10,15 +10,11 @@ import java.util.ArrayList;
 
 import me.rubik.rubikscube.R;
 import me.rubik.rubikscube.databinding.ActivityGetSolutionBinding;
-import me.rubik.rubikscube.databinding.ActivityInsertCubeBinding;
-import me.rubik.rubikscube.databinding.ActivityInsertSideBinding;
 import me.rubik.rubikscube.solver.Solver;
 
 public class GetSolutionActivity extends AppCompatActivity {
-
+    // TODO: error codes in normale text veranderen en zeggen tegen gebruiker
     private ActivityGetSolutionBinding binding;
-
-    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +23,7 @@ public class GetSolutionActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         generateSolution();
 
-        actionBar = getSupportActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Get solution");
 
@@ -62,104 +58,49 @@ public class GetSolutionActivity extends AppCompatActivity {
         ArrayList<Integer> back = InsertCubeActivity.cubeArray.get("back");
 
         for (Integer color : up) {
-            if (color == getColor(R.color.red)) {
-               scrambledCube.append("R");
-            } else if (color == getColor(R.color.green)) {
-                scrambledCube.append("F");
-            } else if (color == getColor(R.color.white)) {
-                scrambledCube.append("U");
-            } else if (color == getColor(R.color.blue)) {
-                scrambledCube.append("B");
-            } else if (color == getColor(R.color.orange)) {
-                scrambledCube.append("L");
-            } else if (color == getColor(R.color.yellow)) {
-                scrambledCube.append("D");
-            }
+            scrambledCube.append(getMove(color));
         }
 
         for (Integer color : right) {
-            if (color == getColor(R.color.red)) {
-                scrambledCube.append("R");
-            } else if (color == getColor(R.color.green)) {
-                scrambledCube.append("F");
-            } else if (color == getColor(R.color.white)) {
-                scrambledCube.append("U");
-            } else if (color == getColor(R.color.blue)) {
-                scrambledCube.append("B");
-            } else if (color == getColor(R.color.orange)) {
-                scrambledCube.append("L");
-            } else if (color == getColor(R.color.yellow)) {
-                scrambledCube.append("D");
-            }
+            scrambledCube.append(getMove(color));
         }
 
         for (Integer color : front) {
-            if (color == getColor(R.color.red)) {
-                scrambledCube.append("R");
-            } else if (color == getColor(R.color.green)) {
-                scrambledCube.append("F");
-            } else if (color == getColor(R.color.white)) {
-                scrambledCube.append("U");
-            } else if (color == getColor(R.color.blue)) {
-                scrambledCube.append("B");
-            } else if (color == getColor(R.color.orange)) {
-                scrambledCube.append("L");
-            } else if (color == getColor(R.color.yellow)) {
-                scrambledCube.append("D");
-            }
+            scrambledCube.append(getMove(color));
         }
 
         for (Integer color : down) {
-            if (color == getColor(R.color.red)) {
-                scrambledCube.append("R");
-            } else if (color == getColor(R.color.green)) {
-                scrambledCube.append("F");
-            } else if (color == getColor(R.color.white)) {
-                scrambledCube.append("U");
-            } else if (color == getColor(R.color.blue)) {
-                scrambledCube.append("B");
-            } else if (color == getColor(R.color.orange)) {
-                scrambledCube.append("L");
-            } else if (color == getColor(R.color.yellow)) {
-                scrambledCube.append("D");
-            }
+            scrambledCube.append(getMove(color));
         }
 
         for (Integer color : left) {
-            if (color == getColor(R.color.red)) {
-                scrambledCube.append("R");
-            } else if (color == getColor(R.color.green)) {
-                scrambledCube.append("F");
-            } else if (color == getColor(R.color.white)) {
-                scrambledCube.append("U");
-            } else if (color == getColor(R.color.blue)) {
-                scrambledCube.append("B");
-            } else if (color == getColor(R.color.orange)) {
-                scrambledCube.append("L");
-            } else if (color == getColor(R.color.yellow)) {
-                scrambledCube.append("D");
-            }
+            scrambledCube.append(getMove(color));
         }
 
         StringBuilder tempString = new StringBuilder();
         for (Integer color : back) {
-
-            if (color == getColor(R.color.red)) {
-                tempString.append("R");
-            } else if (color == getColor(R.color.green)) {
-                tempString.append("F");
-            } else if (color == getColor(R.color.white)) {
-                tempString.append("U");
-            } else if (color == getColor(R.color.blue)) {
-                tempString.append("B");
-            } else if (color == getColor(R.color.orange)) {
-                tempString.append("L");
-            } else if (color == getColor(R.color.yellow)) {
-                tempString.append("D");
-            }
+            tempString.append(getMove(color));
         }
         scrambledCube.append(tempString.reverse());
 
         return scrambledCube.toString();
+    }
+
+    private String getMove(int color) {
+        if (color == getColor(R.color.red)) {
+            return "R";
+        } else if (color == getColor(R.color.green)) {
+            return "F";
+        } else if (color == getColor(R.color.white)) {
+            return "U";
+        } else if (color == getColor(R.color.blue)) {
+            return "B";
+        } else if (color == getColor(R.color.orange)) {
+            return "L";
+        } else if (color == getColor(R.color.yellow)) {
+            return"D";
+        }
+
+        return "";
     }
 }

@@ -15,8 +15,6 @@ class CoordCube {
     static final int N_COMB = Search.USE_COMBP_PRUN ? 140 : 70;
     static final int P2_PARITY_MOVE = Search.USE_COMBP_PRUN ? 0xA5 : 0;
 
-
-    //phase1
     static char[][] UDSliceMove = new char[N_SLICE][N_MOVES];
     static char[][] TwistMove = new char[N_TWIST_SYM][N_MOVES];
     static char[][] FlipMove = new char[N_FLIP_SYM][N_MOVES];
@@ -25,19 +23,15 @@ class CoordCube {
     static int[] UDSliceFlipPrun = new int[N_SLICE * N_FLIP_SYM / 8 + 1];
     static int[] TwistFlipPrun = Search.USE_TWIST_FLIP_PRUN ? new int[N_FLIP * N_TWIST_SYM / 8 + 1] : null;
 
-    //phase2
     static char[][] CPermMove = new char[N_PERM_SYM][N_MOVES2];
     static char[][] EPermMove = new char[N_PERM_SYM][N_MOVES2];
     static char[][] MPermMove = new char[N_MPERM][N_MOVES2];
     static char[][] MPermConj = new char[N_MPERM][16];
-    static char[][] CCombPMove;// = new char[N_COMB][N_MOVES2];
+    static char[][] CCombPMove;
     static char[][] CCombPConj = new char[N_COMB][16];
     static int[] MCPermPrun = new int[N_MPERM * N_PERM_SYM / 8 + 1];
     static int[] EPermCCombPPrun = new int[N_COMB * N_PERM_SYM / 8 + 1];
 
-    /**
-     *  0: not initialized, 1: partially initialized, 2: finished
-     */
     static int initLevel = 0;
 
     static synchronized void init(boolean fullInit) {
@@ -68,11 +62,11 @@ class CoordCube {
     }
 
     static void setPruning(int[] table, int index, int value) {
-        table[index >> 3] ^= value << (index << 2); // index << 2 <=> (index & 7) << 2
+        table[index >> 3] ^= value << (index << 2);
     }
 
     static int getPruning(int[] table, int index) {
-        return table[index >> 3] >> (index << 2) & 0xf; // index << 2 <=> (index & 7) << 2
+        return table[index >> 3] >> (index << 2) & 0xf;
     }
 
     static void initUDSliceMoveConj() {
@@ -208,21 +202,18 @@ class CoordCube {
         final int NEXT_AXIS_MAGIC = N_MOVES == 10 ? 0x42 : 0x92492;
 
         int depth = getPruning(PrunTable, N_SIZE) - 1;
-        int done = 0;
 
-        // long tt = System.nanoTime();
 
         if (depth == -1) {
             for (int i = 0; i < N_SIZE / 8 + 1; i++) {
                 PrunTable[i] = 0x11111111;
             }
-            setPruning(PrunTable, 0, 0 ^ 1);
+            setPruning(PrunTable, 0, 1);
             depth = 0;
-            done = 1;
         }
 
         while (depth < SEARCH_DEPTH) {
-            int mask = (depth + 1) * 0x11111111 ^ 0xffffffff;
+            int mask = ~((depth + 1) * 0x11111111);
             for (int i = 0; i < PrunTable.length; i++) {
                 int val = PrunTable[i] ^ mask;
                 val &= val >> 1;
@@ -276,7 +267,6 @@ class CoordCube {
                         }
                         continue;
                     }
-                    done++;
                     if (inv) {
                         setPruning(PrunTable, i, xorVal);
                         break;
@@ -294,12 +284,11 @@ class CoordCube {
                         }
                         if (getPruning(PrunTable, idxx) == check) {
                             setPruning(PrunTable, idxx, xorVal);
-                            done++;
                         }
                     }
                 }
             }
-            // System.out.println(String.format("%2d%10d%10f", depth, done, (System.nanoTime() - tt) / 1e6d));
+
         }
     }
 
@@ -361,21 +350,7 @@ class CoordCube {
 
     CoordCube() { }
 
-    void set(CoordCube node) {
-        this.twist = node.twist;
-        this.tsym = node.tsym;
-        this.flip = node.flip;
-        this.fsym = node.fsym;
-        this.slice = node.slice;
-        this.prun = node.prun;
-
-        if (Search.USE_CONJ_PRUN) {
-            this.twistc = node.twistc;
-            this.flipc = node.flipc;
-        }
-    }
-
-    void calcPruning(boolean isPhase1) {
+    void calcPruning() {
         prun = Math.max(
                 Math.max(
                         getPruning(UDSliceTwistPrun,
@@ -383,8 +358,8 @@ class CoordCube {
                         getPruning(UDSliceFlipPrun,
                                 flip * N_SLICE + UDSliceConj[slice][fsym])),
                 Math.max(
-                        Search.USE_CONJ_PRUN ? getPruning(TwistFlipPrun,
-                                (twistc >> 3) << 11 | CubieCube.FlipS2RF[flipc ^ (twistc & 7)]) : 0,
+                        getPruning(TwistFlipPrun,
+                                twistc >> 3 << 11 | CubieCube.FlipS2RF[flipc ^ twistc & 7]),
                         Search.USE_TWIST_FLIP_PRUN ? getPruning(TwistFlipPrun,
                                 twist << 11 | CubieCube.FlipS2RF[flip << 3 | (fsym ^ tsym)]) : 0));
     }
@@ -428,7 +403,7 @@ class CoordCube {
         return prun <= depth;
     }
 
-    int doMovePrun(CoordCube cc, int m, boolean isPhase1) {
+    int doMovePrun(CoordCube cc, int m) {
         slice = UDSliceMove[cc.slice][m];
 
         flip = FlipMove[cc.flip][CubieCube.Sym8Move[m << 3 | cc.fsym]];

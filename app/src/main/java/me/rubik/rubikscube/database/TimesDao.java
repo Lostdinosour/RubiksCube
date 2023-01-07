@@ -24,7 +24,4 @@ public interface TimesDao {
     @Query("SELECT MIN(time) FROM times")
     int getBestTime();
 
-    @Query("DELETE FROM times")
-    void deleteAll();
-
 }

@@ -33,8 +33,6 @@ public class TimerTableActivity extends AppCompatActivity {
 
     private ActivityTimerTableBinding binding;
 
-    private Thread thread;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,11 +66,11 @@ public class TimerTableActivity extends AppCompatActivity {
                         List<Times> times = DatabaseHandler.getDatabase().getAll();
                         Comparator<Times> comparator;
                         if (sortByDate) {
-                            comparator = (Comparator<Times>) (time1, time2) -> (int) (time1.time - time2.time);
+                            comparator = Comparator.comparingInt(time -> time.time);
                             binding.buttonSortBy.setText("SORT BY TIME");
                             sortByDate = false;
                         } else {
-                            comparator = (Comparator<Times>) (time1, time2) -> (int) (time2.date - time1.date);
+                            comparator = (time1, time2) -> (int) (time2.date - time1.date);
                             binding.buttonSortBy.setText("SORT BY Date");
                             sortByDate = true;
                         }
@@ -86,11 +84,11 @@ public class TimerTableActivity extends AppCompatActivity {
     }
 
     private void initTable() {
-        thread = new Thread() {
+        Thread thread = new Thread() {
             @Override
             public void run() {
                 List<Times> times = DatabaseHandler.getDatabase().getAll();
-                Comparator<Times> comparator = (Comparator<Times>) (time1, time2) -> (int) (time2.date - time1.date);
+                Comparator<Times> comparator = (time1, time2) -> (int) (time2.date - time1.date);
                 times.sort(comparator);
                 addListToTable(times);
             }
@@ -169,8 +167,8 @@ public class TimerTableActivity extends AppCompatActivity {
 
     private final class TableOnClickListener implements View.OnClickListener {
 
-        private Times time;
-        private View view;
+        private final Times time;
+        private final View view;
 
         public TableOnClickListener(Times time, View view) {
             this.time = time;
@@ -180,7 +178,7 @@ public class TimerTableActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             new AlertDialog.Builder(TimerTableActivity.this).setMessage("Are you sure you want to delete this?")
-                    .setPositiveButton("yes", new DialogInterface.OnClickListener()
+                    .setPositiveButton("delete", new DialogInterface.OnClickListener()
                     {
                         public void onClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt) {
                             new Thread() {
@@ -197,7 +195,7 @@ public class TimerTableActivity extends AppCompatActivity {
                             }.start();
                         }
                     })
-                    .setNegativeButton("no", new DialogInterface.OnClickListener()
+                    .setNegativeButton("cancel", new DialogInterface.OnClickListener()
                     {
                         public void onClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt) {
                         }

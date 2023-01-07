@@ -16,7 +16,6 @@ public class Times {
     @ColumnInfo(name = "time")
     public int time;
 
-
     public void setValues(long date, int solveTime) {
         this.date = date;
         this.time = solveTime;

@@ -1,11 +1,9 @@
 package me.rubik.rubikscube.camera;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
-import android.os.Build;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -15,7 +13,6 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
@@ -38,17 +35,8 @@ public class PortraitCameraView extends CameraBridgeViewBase implements Camera.P
     private SurfaceTexture mSurfaceTexture;
     private int mCameraId;
     Handler handler;
-    boolean callBuffer = false;
     Camera.Size bestSize = null;
     Camera.Size pictureSize = null;
-    private LayoutMode mLayoutMode;
-    private int mCenterPosX = -1;
-    private int mCenterPosY;
-
-    public static enum LayoutMode {
-        FitToParent, // Scale to the size that no side is larger than the parent
-        NoBlank // Scale to the size that no side is smaller than the parent
-    }
 
     public static class JavaCameraSizeAccessor implements ListItemAccessor {
 
@@ -63,9 +51,6 @@ public class PortraitCameraView extends CameraBridgeViewBase implements Camera.P
         }
     }
 
-    public PortraitCameraView(Context context, int cameraId) {
-        super(context, cameraId);
-    }
 
     public PortraitCameraView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -97,7 +82,6 @@ public class PortraitCameraView extends CameraBridgeViewBase implements Camera.P
 
             if (mCamera == null) return false;
 
-            /* Now set camera parameters */
             try {
                 Camera.Parameters params = mCamera.getParameters();
                 List<Camera.Size> sizes = params.getSupportedPreviewSizes();
@@ -109,87 +93,70 @@ public class PortraitCameraView extends CameraBridgeViewBase implements Camera.P
                 Log.d(TAG, "getSupportedPreviewSizes()  " + bestSize.width + "  " + bestSize.height);
                 Log.d(TAG, "Picturesizes()  " + pictureSize.width + "  " + pictureSize.height);
 
-                //                bestSize.width = GlobalArea.display_width;
-                ////                bestSize.height = GlobalArea.display_height;
                 for (int i = 1; i < sizeList.size(); i++) {
-
                     if ((sizeList.get(i).width * sizeList.get(i).height) > (bestSize.width * bestSize.height)) {
                         Log.d(TAG, "getSupportedPreviewSizes()   " + sizeList.get(i).width + "  " + sizeList.get(i).height);
                         bestSize = sizeList.get(i);
                     }
                 }
 
+                params.setPreviewFormat(ImageFormat.NV21);
+                Log.e(TAG, "Set preview size to " + bestSize.width + " x " + bestSize.height);
+                Log.e(TAG, "Set preview size to " + width + " x " + height);
+                params.setPreviewSize(bestSize.width, bestSize.height);
+                params.setPictureSize(pictureSize.width, pictureSize.height);
 
-                if (sizes != null) {
-                    /* Select the size that fits surface considering maximum size allowed */
-                    Size frameSize = calculateCameraFrameSize(sizes, new JavaCameraSizeAccessor(), height, width); //use turn around values here to get the correct prev size for portrait mode
+                params.setRecordingHint(true);
 
-                    params.setPreviewFormat(ImageFormat.NV21);
-                    Log.e(TAG, "Set preview size to " + Integer.valueOf((int) bestSize.width) + " x " + Integer.valueOf((int) bestSize.height));
-                    Log.e(TAG, "Set preview size to " + width + " x " + height);
-                    params.setPreviewSize((int) bestSize.width, (int) bestSize.height);
-                    params.setPictureSize((int) pictureSize.width, (int) pictureSize.height);
+                List<String> FocusModes = params.getSupportedFocusModes();
+                if (FocusModes != null && FocusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
+                    params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+                }
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-                        params.setRecordingHint(true);
+                List<int[]> ints = params.getSupportedPreviewFpsRange();
+                for (int i = 0; i < ints.size(); i++) {
+                    Log.e("privew size", String.valueOf(ints.get(i).length));
+                }
 
-                    List<String> FocusModes = params.getSupportedFocusModes();
-                    if (FocusModes != null && FocusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
-                        params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
-                    }
+                mCamera.setParameters(params);
 
-                    List<int[]> ints = params.getSupportedPreviewFpsRange();
-                    for (int i = 0; i < ints.size(); i++) {
-                        Log.e("privew size", String.valueOf(ints.get(i).length));
-                    }
-                    //                    params.setPreviewFpsRange(10000,10000);
-                    mCamera.setParameters(params);
+                params = mCamera.getParameters();
+                mFrameWidth = params.getPreviewSize().height;
+                mFrameHeight = params.getPreviewSize().width;
 
-                    //                   boolean mSurfaceConfiguring = adjustSurfaceLayoutSize(bestSize, true, width, height);
+                int realWidth = mFrameHeight;
+                int realHeight = mFrameWidth;
+                if ((getLayoutParams().width == LinearLayout.LayoutParams.MATCH_PARENT) && (getLayoutParams().height == LinearLayout.LayoutParams.MATCH_PARENT))
+                    mScale = Math.min(((float) height) / mFrameHeight, ((float) width) / mFrameWidth);
+                else
+                    mScale = 0;
 
-                    params = mCamera.getParameters();
-                    mFrameWidth = params.getPreviewSize().height; //the frame width and height of the super class are used to generate the cached bitmap and they need to be the size of the resulting frame
-                    mFrameHeight = params.getPreviewSize().width;
+                if (mFpsMeter != null) {
+                    mFpsMeter.setResolution(pictureSize.width, pictureSize.height);
+                }
 
-                    int realWidth = mFrameHeight; //the real width and height are the width and height of the frame received in onPreviewFrame ...
-                    int realHeight = mFrameWidth;
-                    if ((getLayoutParams().width == LinearLayout.LayoutParams.MATCH_PARENT) && (getLayoutParams().height == LinearLayout.LayoutParams.MATCH_PARENT))
-                        mScale = Math.min(((float) height) / mFrameHeight, ((float) width) / mFrameWidth);
-                    else
-                        mScale = 0;
+                int size = mFrameWidth * mFrameHeight;
+                size = size * ImageFormat.getBitsPerPixel(params.getPreviewFormat()) / 8;
+                mBuffer = new byte[size];
 
-                    if (mFpsMeter != null) {
-                        mFpsMeter.setResolution((int) pictureSize.width, (int) pictureSize.height);
-                    }
+                mCamera.addCallbackBuffer(mBuffer);
+                mCamera.setPreviewCallbackWithBuffer(this);
 
-                    int size = mFrameWidth * mFrameHeight;
-                    size = size * ImageFormat.getBitsPerPixel(params.getPreviewFormat()) / 8;
-                    mBuffer = new byte[size];
+                mFrameChain = new Mat[2];
+                mFrameChain[0] = new Mat(realHeight + (realHeight / 2), realWidth, CvType.CV_8UC1);
+                mFrameChain[1] = new Mat(realHeight + (realHeight / 2), realWidth, CvType.CV_8UC1);
 
-                    mCamera.addCallbackBuffer(mBuffer);
-                    mCamera.setPreviewCallbackWithBuffer(this);
+                AllocateCache();
 
-                    mFrameChain = new Mat[2];
-                    mFrameChain[0] = new Mat(realHeight + (realHeight / 2), realWidth, CvType.CV_8UC1); //the frame chane is still in landscape
-                    mFrameChain[1] = new Mat(realHeight + (realHeight / 2), realWidth, CvType.CV_8UC1);
+                mCameraFrame = new JavaCameraFrame[2];
+                mCameraFrame[0] = new JavaCameraFrame(mFrameChain[0], mFrameWidth, mFrameHeight);
+                mCameraFrame[1] = new JavaCameraFrame(mFrameChain[1], mFrameWidth, mFrameHeight);
 
-                    AllocateCache();
+                mSurfaceTexture = new SurfaceTexture(MAGIC_TEXTURE_ID);
+                mCamera.setPreviewTexture(mSurfaceTexture);
 
-                    mCameraFrame = new JavaCameraFrame[2];
-                    mCameraFrame[0] = new JavaCameraFrame(mFrameChain[0], mFrameWidth, mFrameHeight); //the camera frame is in portrait
-                    mCameraFrame[1] = new JavaCameraFrame(mFrameChain[1], mFrameWidth, mFrameHeight);
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                        mSurfaceTexture = new SurfaceTexture(MAGIC_TEXTURE_ID);
-                        mCamera.setPreviewTexture(mSurfaceTexture);
-                    } else
-                        mCamera.setPreviewDisplay(null);
-
-                    /* Finally we are ready to start the preview */
-                    Log.d(TAG, "startPreview");
-                    mCamera.startPreview();
-                } else
-                    result = false;
+                Log.d(TAG, "startPreview");
+                mCamera.startPreview();
             } catch (Exception e) {
                 result = false;
                 e.printStackTrace();
@@ -204,7 +171,6 @@ public class PortraitCameraView extends CameraBridgeViewBase implements Camera.P
             if (mCamera != null) {
                 mCamera.stopPreview();
                 mCamera.setPreviewCallback(null);
-
                 mCamera.release();
             }
             mCamera = null;
@@ -222,15 +188,10 @@ public class PortraitCameraView extends CameraBridgeViewBase implements Camera.P
     @Override
     protected boolean connectCamera(int width, int height) {
 
-        /* 1. We need to instantiate camera
-         * 2. We need to start thread which will be getting frames
-         */
-        /* First step - initialize camera connection */
         Log.d(TAG, "Connecting to camera");
         if (!initializeCamera(width, height))
             return false;
 
-        /* now we can start update thread */
         Log.d(TAG, "Starting processing thread");
         mStopThread = false;
         mThread = new Thread(new CameraWorker());
@@ -240,9 +201,6 @@ public class PortraitCameraView extends CameraBridgeViewBase implements Camera.P
     }
 
     protected void disconnectCamera() {
-        /* 1. We need to stop thread which updating the frames
-         * 2. Stop camera and release it
-         */
         Log.d(TAG, "Disconnecting from camera");
         try {
             mStopThread = true;
@@ -259,7 +217,6 @@ public class PortraitCameraView extends CameraBridgeViewBase implements Camera.P
             mThread = null;
         }
 
-        /* Now release camera */
         releaseCamera();
     }
 
@@ -272,17 +229,16 @@ public class PortraitCameraView extends CameraBridgeViewBase implements Camera.P
             mCamera.addCallbackBuffer(mBuffer);
     }
 
-    private class JavaCameraFrame implements CvCameraViewFrame {
-        private Mat mYuvFrameData;
-        private Mat mRgba;
-        private int mWidth;
-        private int mHeight;
+    private static class JavaCameraFrame implements CvCameraViewFrame {
+        private final Mat mYuvFrameData;
+        private final Mat mRgba;
+        private final int mWidth;
+        private final int mHeight;
         private Mat mRotated;
 
         public Mat gray() {
             if (mRotated != null) mRotated.release();
             mRotated = mYuvFrameData.submat(0, mWidth, 0, mHeight);
-            //submat with reversed width and height because its done on the landscape frame
             mRotated = mRotated.t();
             Core.flip(mRotated, mRotated, 1);
             return mRotated;
@@ -311,7 +267,6 @@ public class PortraitCameraView extends CameraBridgeViewBase implements Camera.P
     }
 
     private class CameraWorker implements Runnable {
-
         public void run() {
             do {
                 synchronized (PortraitCameraView.this) {
@@ -330,7 +285,5 @@ public class PortraitCameraView extends CameraBridgeViewBase implements Camera.P
             } while (!mStopThread);
             Log.d(TAG, "Finish processing thread");
         }
-
-
     }
 }

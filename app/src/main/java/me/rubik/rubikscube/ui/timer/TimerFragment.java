@@ -34,7 +34,7 @@ public class TimerFragment extends Fragment {
 
     private static boolean timerStarted;
 
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
 
     private static FragmentActivity currentActivity;
 
@@ -45,6 +45,23 @@ public class TimerFragment extends Fragment {
         binding = FragmentTimerBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         currentActivity = getActivity();
+
+        setButtonListeners();
+
+        if (timerStarted) {
+            binding.textTimer.setTextColor(getActivity().getColor(R.color.timer_red));
+        } else {
+            binding.textTimer.setTextColor(getActivity().getColor(R.color.black));
+        }
+
+        regenScramble();
+        updateBestTime();
+        updateAverageTime();
+        return root;
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void setButtonListeners() {
         binding.getRoot().setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -68,12 +85,6 @@ public class TimerFragment extends Fragment {
                 return true;
             }
         });
-
-        if (timerStarted) {
-            binding.textTimer.setTextColor(getActivity().getColor(R.color.timer_red));
-        } else {
-            binding.textTimer.setTextColor(getActivity().getColor(R.color.black));
-        }
         binding.buttonTimeTable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,10 +105,7 @@ public class TimerFragment extends Fragment {
                 startActivity(myIntent);
             }
         });
-        regenScramble();
-        updateBestTime();
-        updateAverageTime();
-        return root;
+
     }
 
     private void regenScramble() {
