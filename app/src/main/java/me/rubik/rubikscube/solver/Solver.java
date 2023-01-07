@@ -2,7 +2,7 @@ package me.rubik.rubikscube.solver;
 
 public class Solver {
 
-    /** prepare scrambledCube as
+    /**
      * u = white, b = blue, f = green, d = yellow, l = orange,
      *
      *             |************|

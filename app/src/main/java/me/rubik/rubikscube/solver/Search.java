@@ -75,7 +75,19 @@ public class Search {
     public synchronized String solution(String facelets, int maxDepth, long probeMax, long probeMin, int verbose) {
         int check = verify(facelets);
         if (check != 0) {
-            return "Error " + Math.abs(check);
+            if (check == -2) {
+                return "Not all 12 edges exist exactly once";
+            } else if (check == -3) {
+                return "One edge has to be flipped";
+            } else if (check == -4) {
+                return "Not all corners exist exactly once";
+            } else if (check == -5) {
+                return "One corner has to be twisted";
+            } else if (check == -6) {
+                return "Two corners or two edges have to be exchanged";
+            } else {
+                return "An unknown error has occurred";
+            }
         }
         this.solLen = maxDepth + 1;
         this.probe = 0;
@@ -197,11 +209,11 @@ public class Search {
                     continue;
                 }
                 if (phase1PreMoves(maxPreMoves, -30, urfCubieCube[urfIdx], (int) (selfSym & 0xffff)) == 0) {
-                    return solution == null ? "Error 8" : solution.toString();
+                    return solution == null ? "An unknown error has occurred" : solution.toString();
                 }
             }
         }
-        return solution == null ? "Error 7" : solution.toString();
+        return solution == null ? "An unknown error has occurred" : solution.toString();
     }
 
     protected int initPhase2Pre() {
@@ -401,10 +413,10 @@ public class Search {
 
             if (ud.prun <= length1 && rl.prun <= length1 && fb.prun <= length1
                     && phase1opt(ud, rl, fb, selfSym, length1, -1) == 0) {
-                return solution == null ? "Error 8" : solution.toString();
+                return solution == null ? "An unknown error has occurred" : solution.toString();
             }
         }
-        return solution == null ? "Error 7" : solution.toString();
+        return solution == null ? "An unknown error has occurred" : solution.toString();
     }
 
     protected int phase1opt(CoordCube ud, CoordCube rl, CoordCube fb, long ssym, int maxl, int lm) {

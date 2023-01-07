@@ -2,11 +2,15 @@ package me.rubik.rubikscube.ui.timer;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -24,6 +28,7 @@ import java.util.Random;
 import me.rubik.rubikscube.database.DatabaseHandler;
 import me.rubik.rubikscube.database.Times;
 import me.rubik.rubikscube.database.TimesDao;
+import me.rubik.rubikscube.databinding.ActivityTimerGraphBinding;
 import me.rubik.rubikscube.ui.solver.InsertCubeActivity;
 
 public class TimerGraphActivity extends AppCompatActivity {
@@ -32,9 +37,12 @@ public class TimerGraphActivity extends AppCompatActivity {
     private XYMultipleSeriesDataset dataset;
     private XYMultipleSeriesRenderer renderer;
 
+    private ActivityTimerGraphBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        binding = ActivityTimerGraphBinding.inflate(getLayoutInflater());
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -53,13 +61,12 @@ public class TimerGraphActivity extends AppCompatActivity {
         renderer.setPointSize(10);
         renderer.setXTitle("Date");
         renderer.setYTitle("Time");
-        renderer.setMargins( new int []{20, 30, 15, 0});
+        renderer.setMargins( new int []{20, 50, 15, 0});
         renderer.setZoomButtonsVisible(true);
-        renderer.setBarSpacing(10);
+        renderer.setBarSpacing(20);
         renderer.setShowGrid(true);
         renderer.setYLabelsColor(0, Color.RED);
         renderer.setLabelsTextSize(50);
-
 
         XYSeriesRenderer rendererSeries = new XYSeriesRenderer();
         rendererSeries.setColor(Color.RED);
@@ -85,10 +92,9 @@ public class TimerGraphActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                this.finish();
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            this.finish();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -100,6 +106,8 @@ public class TimerGraphActivity extends AppCompatActivity {
         GraphicalView view = ChartFactory.getTimeChartView(this, dataset, renderer, null);
         view.refreshDrawableState();
         view.repaint();
-        setContentView(view);
+        binding.getRoot().addView(view);
+
+        setContentView(binding.getRoot());
     }
 }

@@ -13,7 +13,6 @@ import me.rubik.rubikscube.databinding.ActivityGetSolutionBinding;
 import me.rubik.rubikscube.solver.Solver;
 
 public class GetSolutionActivity extends AppCompatActivity {
-    // TODO: error codes in normale text veranderen en zeggen tegen gebruiker
     private ActivityGetSolutionBinding binding;
 
     @Override
