@@ -15,15 +15,7 @@
     <string name="default_timer">0.00</string>
     <string name="best_time">Best time:</string>
     <string name="average_time">Average time:</string>
-    <string name="title_activity_camera_cube_insert">CameraCubeInsert</string>
 
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
-
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="take">Take</string>
     <string name="table">Table</string>
     <string name="graph">Graph</string>
