@@ -2,20 +2,14 @@ package me.rubik.rubikscube.ui.timer;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
-import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
@@ -23,13 +17,11 @@ import org.achartengine.renderer.XYSeriesRenderer;
 
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Random;
 
 import me.rubik.rubikscube.database.DatabaseHandler;
 import me.rubik.rubikscube.database.Times;
 import me.rubik.rubikscube.database.TimesDao;
 import me.rubik.rubikscube.databinding.ActivityTimerGraphBinding;
-import me.rubik.rubikscube.ui.solver.InsertCubeActivity;
 
 public class TimerGraphActivity extends AppCompatActivity {
 

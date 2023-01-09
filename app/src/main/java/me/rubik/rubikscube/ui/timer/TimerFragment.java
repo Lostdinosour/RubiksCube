@@ -15,7 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import java.io.IOException;
 import java.util.List;
 
 import me.rubik.rubikscube.R;
@@ -24,7 +23,6 @@ import me.rubik.rubikscube.database.Times;
 import me.rubik.rubikscube.database.TimesDao;
 import me.rubik.rubikscube.databinding.FragmentTimerBinding;
 import me.rubik.rubikscube.scrambler.Scrambler;
-import me.rubik.rubikscube.ui.solver.InsertCubeActivity;
 
 public class TimerFragment extends Fragment {
 

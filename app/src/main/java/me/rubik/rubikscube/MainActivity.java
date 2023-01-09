@@ -8,8 +8,6 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.room.Room;
 
-import org.opencv.android.OpenCVLoader;
-
 import me.rubik.rubikscube.database.DatabaseHandler;
 import me.rubik.rubikscube.databinding.ActivityMainBinding;
 import me.rubik.rubikscube.solver.Search;
@@ -20,7 +18,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Search.init();
-        OpenCVLoader.initDebug();
         DatabaseHandler.init(Room.databaseBuilder(getApplicationContext(), DatabaseHandler.class, "times").build());
         me.rubik.rubikscube.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

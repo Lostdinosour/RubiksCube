@@ -49,12 +49,12 @@ public class GetSolutionActivity extends AppCompatActivity {
     private String generateCube() {
         StringBuilder scrambledCube = new StringBuilder();
 
-        ArrayList<Integer> up = InsertCubeActivity.cubeArray.get("up");
-        ArrayList<Integer> left = InsertCubeActivity.cubeArray.get("left");
-        ArrayList<Integer> front = InsertCubeActivity.cubeArray.get("front");
-        ArrayList<Integer> right = InsertCubeActivity.cubeArray.get("right");
-        ArrayList<Integer> down = InsertCubeActivity.cubeArray.get("down");
-        ArrayList<Integer> back = InsertCubeActivity.cubeArray.get("back");
+        ArrayList<Integer> up = SolverFragment.cubeArray.get("up");
+        ArrayList<Integer> left = SolverFragment.cubeArray.get("left");
+        ArrayList<Integer> front = SolverFragment.cubeArray.get("front");
+        ArrayList<Integer> right = SolverFragment.cubeArray.get("right");
+        ArrayList<Integer> down = SolverFragment.cubeArray.get("down");
+        ArrayList<Integer> back = SolverFragment.cubeArray.get("back");
 
         for (Integer color : up) {
             scrambledCube.append(getMove(color));
