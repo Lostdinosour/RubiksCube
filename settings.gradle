@@ -14,4 +14,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "RubiksCube"
 include ':app'
-include ':opencv'

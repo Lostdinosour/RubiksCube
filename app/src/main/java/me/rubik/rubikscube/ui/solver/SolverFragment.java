@@ -3,7 +3,9 @@ package me.rubik.rubikscube.ui.solver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -38,7 +40,7 @@ public class SolverFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         firstDraw = true;
         binding = FragmentSolverBinding.inflate(inflater, container, false);
-
+        initDrawing();
         setButtonListeners();
 
         listener = new OnClickListener();
@@ -125,8 +127,14 @@ public class SolverFragment extends Fragment {
     int screenWidth, screenHeight;
     int squareSize;
 
-    private void redrawSquares() {
-        DisplayMetrics metrics = new DisplayMetrics();
+    DisplayMetrics metrics;
+    Bitmap bitmap;
+    Canvas canvas;
+    Paint paint;
+    Paint border;
+
+    private void initDrawing() {
+        metrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         screenWidth = metrics.widthPixels;
         screenHeight = metrics.heightPixels;
@@ -136,17 +144,23 @@ public class SolverFragment extends Fragment {
         ImageView imageView = new ImageView(getActivity());
         imageView.setLayoutParams(new ConstraintLayout.LayoutParams(screenWidth, screenHeight));
         binding.getRoot().addView(imageView);
-        Bitmap bitmap = Bitmap.createBitmap(screenWidth, screenHeight, Bitmap.Config.ARGB_8888);
+        bitmap = Bitmap.createBitmap(screenWidth, screenHeight, Bitmap.Config.ARGB_8888);
         imageView.setImageBitmap(bitmap);
-        Canvas canvas = new Canvas(bitmap);
-        Paint paint = new Paint();
+        canvas = new Canvas(bitmap);
+        canvas.drawBitmap(bitmap, 0, 0, new Paint());
+        paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
 
-        Paint border = new Paint();
+        border = new Paint();
         border.setStyle(Paint.Style.STROKE);
         border.setStrokeWidth(5);
         border.setColor(0xFF000000);
+    }
 
+    private void redrawSquares() {
+        System.out.println("test");
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.MULTIPLY);
+        if (firstDraw) {
         for (int i = 0; i < 6; i++) {
             int topX;
             int topY;
@@ -185,7 +199,6 @@ public class SolverFragment extends Fragment {
 
                     int color = cubeArray.get(side.name()).get(square);
                     paint.setColor(color);
-
                     int left = topX + (squareSize * x);
                     int top = topY + (squareSize * y);
                     int right = topX + (squareSize * x) + squareSize;
@@ -213,6 +226,8 @@ public class SolverFragment extends Fragment {
                 listener.addSide(topX, topY, topX + squareSize * 3, topY + squareSize * 3, squares);
             }
         }
+        }
+
         firstDraw = false;
     }
 
@@ -235,42 +250,47 @@ public class SolverFragment extends Fragment {
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            if (event.getAction() == MotionEvent.ACTION_DOWN ) {
-                int x = (int) event.getX();
-                int y = (int) event.getY();
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        int x = (int) event.getX();
+                        int y = (int) event.getY();
 
-                if (x < ((screenWidth / 2f) - (squareSize * 3 / 2f) - (squareSize * 3)) || x > ((screenWidth / 2f) - (squareSize * 3 / 2f) + (squareSize * 3)) + squareSize * 3) {
-                    return false;
-                } else if (y < (screenHeight * 0.15) || y > (screenHeight * 0.15) + (squareSize * 3 * 3) + squareSize * 3) {
-                    return false;
-                }
+                        if (x < ((screenWidth / 2f) - (squareSize * 3 / 2f) - (squareSize * 3)) || x > ((screenWidth / 2f) - (squareSize * 3 / 2f) + (squareSize * 3)) + squareSize * 3) {
+                            return;
+                        } else if (y < (screenHeight * 0.15) || y > (screenHeight * 0.15) + (squareSize * 3 * 3) + squareSize * 3) {
+                            return;
+                        }
 
-                for (ArrayList<Map<String, Integer>> side : list) {
-                    if (x >= side.get(0).get("left") && x <= side.get(0).get("right")) {
-                        if (y >= side.get(0).get("top") && y <= side.get(0).get("bottom")) {
-                            for (Map<String, Integer> map : side) {
-                                if (map.size() == 4) continue;
-                                if (x >= map.get("left") && x <= map.get("right")) {
-                                    if (y >= map.get("top") && y <= map.get("bottom")) {
-                                        int color = getNextColor(map.get("color"));
+                        int count = 0;
+                        for (ArrayList<Map<String, Integer>> side : list) {
+                            count++;
+                            if (x >= side.get(0).get("left") && x <= side.get(0).get("right")) {
+                                if (y >= side.get(0).get("top") && y <= side.get(0).get("bottom")) {
+                                    count++;
+                                    for (Map<String, Integer> map : side) {
+                                        if (map.size() == 4) continue;
+                                        if (x >= map.get("left") && x <= map.get("right")) {
+                                            if (y >= map.get("top") && y <= map.get("bottom")) {
+                                                int color = OnClickListener.this.getNextColor(map.get("color"));
 
-                                        cubeArray.get(Side.intToSide(map.get("side")).name()).set(map.get("square"), color);
-                                        map.replace("color", color);
-                                        redrawSquares();
-                                        return true;
+                                                cubeArray.get(Side.intToSide(map.get("side")).name()).set(map.get("square"), color);
+                                                map.replace("color", color);
+                                                redrawSquares();}
+                                        }
                                     }
                                 }
                             }
-                            return true;
                         }
+                        System.out.println(count);
                     }
-                }
-                return false;
+                });
             }
-            return false;
+            return true;
         }
 
-        private int getNextColor(int currentColor) {
+        private int getNextColor(int currentColor){
             if (currentColor == getActivity().getColor(R.color.white)) {
                 return getActivity().getColor(R.color.orange);
             } else if (currentColor == getActivity().getColor(R.color.orange)) {
