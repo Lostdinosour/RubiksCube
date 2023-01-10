@@ -23,5 +23,7 @@
 
     <string name="col1">Time</string>
     <string name="col2">Date</string>
+    <string name="help">help</string>
+    <string name="title_activity_help_screen">HelpScreenActivity</string>
 
 </resources>

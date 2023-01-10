@@ -5,7 +5,6 @@
     <uses-permission
         android:name="android.permission.CAMERA"
         android:required="true" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -18,6 +17,13 @@
         android:theme="@style/Theme.RubiksCube"
         tools:targetApi="31">
         <activity
+            android:name=".ui.helpScreen.HelpScreenActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".ui.timer.TimerTableActivity"
             android:exported="false">
             <meta-data
@@ -26,13 +32,6 @@
         </activity>
         <activity
             android:name=".ui.timer.TimerGraphActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".camera.InsertCameraCubeActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

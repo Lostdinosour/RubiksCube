@@ -1,5 +1,6 @@
 package me.rubik.rubikscube.ui.solver;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -40,7 +41,7 @@ public class SolverFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         firstDraw = true;
         binding = FragmentSolverBinding.inflate(inflater, container, false);
-        initDrawing();
+
         setButtonListeners();
 
         listener = new OnClickListener();
@@ -50,7 +51,9 @@ public class SolverFragment extends Fragment {
         }
         redrawSquares();
 
+
         return binding.getRoot();
+
     }
 
     public void setButtonListeners() {
@@ -127,40 +130,31 @@ public class SolverFragment extends Fragment {
     int screenWidth, screenHeight;
     int squareSize;
 
-    DisplayMetrics metrics;
-    Bitmap bitmap;
-    Canvas canvas;
-    Paint paint;
-    Paint border;
+    private ImageView imageView;
 
-    private void initDrawing() {
-        metrics = new DisplayMetrics();
+    private void redrawSquares() {
+        binding.getRoot().removeView(imageView);
+        DisplayMetrics metrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         screenWidth = metrics.widthPixels;
         screenHeight = metrics.heightPixels;
 
         squareSize = (int) (screenWidth * 0.29 / 3);
 
-        ImageView imageView = new ImageView(getActivity());
+        imageView = new ImageView(getActivity());
         imageView.setLayoutParams(new ConstraintLayout.LayoutParams(screenWidth, screenHeight));
         binding.getRoot().addView(imageView);
-        bitmap = Bitmap.createBitmap(screenWidth, screenHeight, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(screenWidth, screenHeight, Bitmap.Config.ARGB_8888);
         imageView.setImageBitmap(bitmap);
-        canvas = new Canvas(bitmap);
-        canvas.drawBitmap(bitmap, 0, 0, new Paint());
-        paint = new Paint();
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
 
-        border = new Paint();
+        Paint border = new Paint();
         border.setStyle(Paint.Style.STROKE);
         border.setStrokeWidth(5);
         border.setColor(0xFF000000);
-    }
 
-    private void redrawSquares() {
-        System.out.println("test");
-        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.MULTIPLY);
-        if (firstDraw) {
         for (int i = 0; i < 6; i++) {
             int topX;
             int topY;
@@ -226,7 +220,7 @@ public class SolverFragment extends Fragment {
                 listener.addSide(topX, topY, topX + squareSize * 3, topY + squareSize * 3, squares);
             }
         }
-        }
+
 
         firstDraw = false;
     }
