@@ -1,12 +1,9 @@
 package me.rubik.rubikscube.ui.solver;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -14,19 +11,18 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import me.rubik.rubikscube.AdsActivity;
 import me.rubik.rubikscube.R;
 import me.rubik.rubikscube.databinding.FragmentSolverBinding;
 import me.rubik.rubikscube.utils.Side;
@@ -67,6 +63,14 @@ public class SolverFragment extends Fragment {
                     Intent myIntent = new Intent(getActivity(), GetSolutionActivity.class);
                     getActivity().startActivity(myIntent);
                 }
+            }
+        });
+
+        binding.button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(getActivity(), AdsActivity.class);
+                getActivity().startActivity(myIntent);
             }
         });
     }
@@ -277,7 +281,6 @@ public class SolverFragment extends Fragment {
                                 }
                             }
                         }
-                        System.out.println(count);
                     }
                 });
             }
