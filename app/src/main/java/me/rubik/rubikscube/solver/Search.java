@@ -127,7 +127,7 @@ public class Search {
         inited = true;
     }
 
-    int verify(String facelets) {
+    public int verify(String facelets) {
         int count = 0x000000;
         byte[] f = new byte[54];
         try {

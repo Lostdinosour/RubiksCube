@@ -26,14 +26,9 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-8108082184413964~6685049035" />
 
-        <activity
-            android:name=".AdsActivity"
-            android:exported="false"
-            android:label="@string/title_activity_ads" />
         <!-- Include the AdActivity configChanges and theme. -->
         <activity
             android:name="com.google.android.gms.ads.AdActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:exported="false"
             android:theme="@android:style/Theme.Translucent" />
         <activity
@@ -58,13 +53,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".ui.solver.GetSolutionActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name">

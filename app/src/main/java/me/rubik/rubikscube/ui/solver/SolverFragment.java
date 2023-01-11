@@ -1,34 +1,50 @@
 package me.rubik.rubikscube.ui.solver;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.OnUserEarnedRewardListener;
+import com.google.android.gms.ads.rewarded.RewardItem;
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import me.rubik.rubikscube.AdsActivity;
 import me.rubik.rubikscube.R;
 import me.rubik.rubikscube.databinding.FragmentSolverBinding;
+import me.rubik.rubikscube.solver.Search;
+import me.rubik.rubikscube.solver.Solver;
 import me.rubik.rubikscube.utils.Side;
 
 public class SolverFragment extends Fragment {
 
+    private static final String TAG = "AdsActivity";
+
+    private RewardedInterstitialAd mInterstitialAd;
+    private Button mGetSolutionButton;
     private FragmentSolverBinding binding;
 
     public static Map<String, ArrayList<Integer>> cubeArray;
@@ -37,6 +53,8 @@ public class SolverFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         firstDraw = true;
         binding = FragmentSolverBinding.inflate(inflater, container, false);
+        mGetSolutionButton = binding.buttonGetSolution;
+        mGetSolutionButton.setEnabled(false);
 
         setButtonListeners();
 
@@ -47,7 +65,7 @@ public class SolverFragment extends Fragment {
         }
         redrawSquares();
 
-
+        loadInterstitialAd();
         return binding.getRoot();
 
     }
@@ -60,17 +78,29 @@ public class SolverFragment extends Fragment {
                     Toast toast = Toast.makeText(getContext(), "Impossible cube", Toast.LENGTH_SHORT);
                     toast.show();
                 } else {
-                    Intent myIntent = new Intent(getActivity(), GetSolutionActivity.class);
-                    getActivity().startActivity(myIntent);
-                }
-            }
-        });
+                    int check = new Search().verify(generateCube());
+                    if (check != 0) {
+                        String error;
+                        if (check == -2) {
+                            error = "Not all 12 edges exist exactly once";
+                        } else if (check == -3) {
+                            error = "One edge has to be flipped";
+                        } else if (check == -4) {
+                            error = "Not all corners exist exactly once";
+                        } else if (check == -5) {
+                            error = "One corner has to be twisted";
+                        } else if (check == -6) {
+                            error = "Two corners or two edges have to be exchanged";
+                        } else {
+                            error = "An unknown error has occurred";
+                        }
 
-        binding.button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent myIntent = new Intent(getActivity(), AdsActivity.class);
-                getActivity().startActivity(myIntent);
+                        Toast toast = Toast.makeText(getContext(), error, Toast.LENGTH_SHORT);
+                        toast.show();
+                    } else {
+                        showInterstitial();
+                    }
+                }
             }
         });
     }
@@ -303,4 +333,138 @@ public class SolverFragment extends Fragment {
             }
         }
     }
+
+    public void loadInterstitialAd() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        RewardedInterstitialAd.load(getActivity(), getString(R.string.interstitial_ad_unit_id), adRequest, new RewardedInterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull RewardedInterstitialAd interstitialAd) {
+                // The mInterstitialAd reference will be null until
+                // an ad is loaded.
+                mInterstitialAd = interstitialAd;
+                mGetSolutionButton.setEnabled(true);
+
+                interstitialAd.setFullScreenContentCallback(
+                        new FullScreenContentCallback() {
+                            @Override
+                            public void onAdDismissedFullScreenContent() {
+                                // Called when fullscreen content is dismissed.
+                                // Make sure to set your reference to null so you don't
+                                // show it a second time.
+                                mInterstitialAd = null;
+                                Log.d(TAG, "The ad was dismissed.");
+                            }
+
+                            @Override
+                            public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                // Called when fullscreen content failed to show.
+                                // Make sure to set your reference to null so you don't
+                                // show it a second time.
+                                mInterstitialAd = null;
+                                Log.d(TAG, "The ad failed to show.");
+                            }
+
+                            @Override
+                            public void onAdShowedFullScreenContent() {
+                                // Called when fullscreen content is shown.
+                                Log.d(TAG, "The ad was shown.");
+                            }
+                        });
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error
+                Log.i(TAG, loadAdError.getMessage());
+                mGetSolutionButton.setEnabled(true);
+                mInterstitialAd = null;
+                Toast.makeText(getActivity(), "ad failed to load", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    private void showInterstitial() {
+        // Show the ad if it"s ready. Otherwise toast and reload the ad.
+        if (mInterstitialAd != null) {
+            mInterstitialAd.show(getActivity(), new OnUserEarnedRewardListener() {
+                @Override
+                public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+                    generateSolution();
+                }
+            });
+
+            loadInterstitialAd();
+        } else {
+            Toast.makeText(getActivity(), "Ad failed to load, try again later", Toast.LENGTH_LONG).show();
+            loadInterstitialAd();
+        }
+    }
+
+    private void generateSolution() {
+        new Thread(() -> {
+            String cube = generateCube();
+            String solution = Solver.simpleSolve(cube);
+            binding.textViewSolution.setText(solution);
+        }).start();
+    }
+
+    private String generateCube() {
+        StringBuilder scrambledCube = new StringBuilder();
+
+        ArrayList<Integer> up = SolverFragment.cubeArray.get("up");
+        ArrayList<Integer> left = SolverFragment.cubeArray.get("left");
+        ArrayList<Integer> front = SolverFragment.cubeArray.get("front");
+        ArrayList<Integer> right = SolverFragment.cubeArray.get("right");
+        ArrayList<Integer> down = SolverFragment.cubeArray.get("down");
+        ArrayList<Integer> back = SolverFragment.cubeArray.get("back");
+
+        for (Integer color : up) {
+            scrambledCube.append(getMove(color));
+        }
+
+        for (Integer color : right) {
+            scrambledCube.append(getMove(color));
+        }
+
+        for (Integer color : front) {
+            scrambledCube.append(getMove(color));
+        }
+
+        for (Integer color : down) {
+            scrambledCube.append(getMove(color));
+        }
+
+        for (Integer color : left) {
+            scrambledCube.append(getMove(color));
+        }
+
+        StringBuilder tempString = new StringBuilder();
+        for (Integer color : back) {
+            tempString.append(getMove(color));
+        }
+        scrambledCube.append(tempString.reverse());
+
+        return scrambledCube.toString();
+    }
+
+    private String getMove(int color) {
+        if (color == getActivity().getColor(R.color.red)) {
+            return "R";
+        } else if (color == getActivity().getColor(R.color.green)) {
+            return "F";
+        } else if (color == getActivity().getColor(R.color.white)) {
+            return "U";
+        } else if (color == getActivity().getColor(R.color.blue)) {
+            return "B";
+        } else if (color == getActivity().getColor(R.color.orange)) {
+            return "L";
+        } else if (color == getActivity().getColor(R.color.yellow)) {
+            return"D";
+        }
+
+        return "";
+    }
+
+
 }
