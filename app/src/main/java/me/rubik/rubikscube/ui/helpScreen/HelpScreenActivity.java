@@ -19,10 +19,8 @@ public class HelpScreenActivity extends AppCompatActivity {
 
         binding = ActivityHelpScreenBinding.inflate(getLayoutInflater());
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Help");
-
-
         setContentView(binding.getRoot());
 
 

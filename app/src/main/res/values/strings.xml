@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Rubiks Cube</string>
+    <string name="app_name">Rubimer</string>
     <string name="title_timer">Timer</string>
     <string name="title_solver">Solver</string>
     <string name="insert_cube">Insert Cube</string>

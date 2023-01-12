@@ -21,7 +21,7 @@ public interface TimesDao {
     @Query("SELECT time FROM times")
     List<Integer> getAllTimes();
 
-    @Query("SELECT MIN(time) FROM times")
+    @Query("SELECT FMIN(time) FROM times")
     int getBestTime();
 
 }
